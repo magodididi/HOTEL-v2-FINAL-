@@ -8,7 +8,6 @@ class HotelbookingV2ApplicationTests {
 
     @Test
     void contextLoads() {
-        //some
+        // Test verifies that the Spring Boot context loads without errors.
     }
-
 }
