@@ -6,45 +6,38 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
-
 @Repository
 public class HotelRepository {
-
-    // Используем список для хранения данных о гостиницах в памяти
     private final List<HotelEntity> hotels = new ArrayList<>();
 
-    // Метод для получения всех отелей
+    public HotelRepository() {
+        hotels.add(new HotelEntity(1L, "Hilton", "New York", "5-star", "2025-01-01"));
+        hotels.add(new HotelEntity(2L, "Marriott", "Los Angeles", "4-star", "2025-02-01"));
+        hotels.add(new HotelEntity(3L, "Sheraton", "Chicago", "3-star", "2025-03-01"));
+    }
+
     public List<HotelEntity> findAll() {
         return new ArrayList<>(hotels);
     }
 
-    // Метод для поиска отеля по ID
     public Optional<HotelEntity> findById(Long id) {
-        return hotels.stream()
-                .filter(hotel -> hotel.getId().equals(id))
-                .findFirst();
+        return hotels.stream().filter(hotel -> hotel.getId().equals(id)).findFirst();
     }
 
-    // Метод для поиска отелей по городу и категории
     public List<HotelEntity> findByCityAndCategory(String city, String category) {
         return hotels.stream()
-                .filter(hotel -> hotel.getCity().equals(city)
-                        && hotel.getCategory().equals(category))
+                .filter(hotel -> hotel.getCity().equalsIgnoreCase(city)
+                        && hotel.getCategory().equalsIgnoreCase(category))
                 .toList();
     }
 
-    // Метод для сохранения отеля в память
     public HotelEntity save(HotelEntity hotel) {
-        if (hotel.getId() == null) {
-            hotel.setId((long) (hotels.size() + 1));  // Генерируем ID для нового отеля
-        }
-        hotels.add(hotel);  // Добавляем отель в список
+        hotel.setId((long) (hotels.size() + 1));
+        hotels.add(hotel);
         return hotel;
     }
 
-    // Метод для удаления отеля по ID
     public void deleteById(Long id) {
         hotels.removeIf(hotel -> hotel.getId().equals(id));
     }
 }
-
