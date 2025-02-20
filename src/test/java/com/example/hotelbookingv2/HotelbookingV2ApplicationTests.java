@@ -9,5 +9,6 @@ class HotelbookingV2ApplicationTests {
     @Test
     void contextLoads() {
         // Test verifies that the Spring Boot context loads without errors.
+        throw new UnsupportedOperationException("Метод не реализован");
     }
 }
