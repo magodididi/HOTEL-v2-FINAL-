@@ -1,23 +1,21 @@
 package com.example.hotelbookingv2.repository;
 
-
 import com.example.hotelbookingv2.model.HotelEntity;
-import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
+
 
 @Repository
-public class HotelRepositoryDAO {
+public class HotelRepository {
 
     // Используем список для хранения данных о гостиницах в памяти
     private final List<HotelEntity> hotels = new ArrayList<>();
 
     // Метод для получения всех отелей
     public List<HotelEntity> findAll() {
-        return new ArrayList<>(hotels);  // Возвращаем копию списка, чтобы избежать изменений из внешнего кода
+        return new ArrayList<>(hotels);
     }
 
     // Метод для поиска отеля по ID
@@ -30,7 +28,8 @@ public class HotelRepositoryDAO {
     // Метод для поиска отелей по городу и категории
     public List<HotelEntity> findByCityAndCategory(String city, String category) {
         return hotels.stream()
-                .filter(hotel -> hotel.getCity().equals(city) && hotel.getCategory().equals(category))
+                .filter(hotel -> hotel.getCity().equals(city)
+                        && hotel.getCategory().equals(category))
                 .toList();
     }
 

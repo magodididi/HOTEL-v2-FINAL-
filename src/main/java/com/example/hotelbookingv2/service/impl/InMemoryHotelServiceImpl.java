@@ -2,20 +2,19 @@ package com.example.hotelbookingv2.service.impl;
 
 
 import com.example.hotelbookingv2.model.HotelEntity;
-import com.example.hotelbookingv2.repository.HotelRepositoryDAO;  // Репозиторий для работы с памятью
+import com.example.hotelbookingv2.repository.HotelRepository;  // Репозиторий для работы с памятью
 import com.example.hotelbookingv2.service.HotelService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class InMemoryHotelServiceImpl implements HotelService {
 
     // Используем ваш репозиторий для работы в памяти
-    private final HotelRepositoryDAO hotelRepository;
+    private final HotelRepository hotelRepository;
 
     @Override
     public List<HotelEntity> getHotels(String city, String category) {
