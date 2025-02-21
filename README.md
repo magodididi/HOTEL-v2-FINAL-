@@ -5,44 +5,44 @@
 ## **Key Features**
 
 ### **Hotel and Room Management:**
-View a list of hotels with filtering by city and category.
-Retrieve details of a specific hotel.
-View available rooms in a hotel.
+- View a list of hotels with filtering by city and category.
+- Retrieve details of a specific hotel.
+- View available rooms in a hotel.
 
 ### **Room Booking:**
-Create, edit, and delete bookings.
-Filter bookings by user and date.
-Bulk booking of multiple rooms.
+- Create, edit, and delete bookings.
+- Filter bookings by user and date.
+- Bulk booking of multiple rooms.
 
 ### **Users and Accounts:**
-User registration and authentication.
-Manage user profiles.
+- User registration and authentication.
+- Manage user profiles.
 
 ### **Analytics and Logging:**
-Track booking statistics.
-Log all operations.
-Retrieve logs for a specified period.
+- Track booking statistics.
+- Log all operations.
+- Retrieve logs for a specified period.
 
 ### **REST API:**
-Documented using Swagger.
-Supports integration with external services.
+- Documented using Swagger.
+- Supports integration with external services.
 
 ## **Technologies Used**
 
-**Programming Language**: Java 17
-**Framework**: Spring Boot 3.x
-**Database**: PostgreSQL
-**Build Tool**: Maven
-**API Documentation**: Swagger
-**Containerization**: Docker
+- **Programming Language**: Java 17
+- **Framework**: Spring Boot 3.x
+- **Database**: PostgreSQL
+- **Build Tool**: Maven
+- **API Documentation**: Swagger
+- **Containerization**: Docker
 
 ## **Installation and Setup**
 
 ### **Requirements**
-Installed **Java 17** or later.
-Installed **Maven**.
-Installed **PostgreSQL**.
-Installed **Docker** (optional, for containerized deployment).
+- Installed **Java 17** or later.
+- Installed **Maven**.
+- Installed **PostgreSQL**.
+- Installed **Docker** (optional, for containerized deployment).
 
 ### **Steps to Run the Application**
 ```bash
