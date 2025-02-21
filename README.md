@@ -1,52 +1,50 @@
-# Бронирование отелей (HOTEL-v2-FINAL-)
+# **Hotel Booking (HOTEL-v2-FINAL-)**
 
-**HOTEL-v2-FINAL-** — это приложение для бронирования отелей, которое позволяет пользователям искать отели, бронировать номера, управлять своими бронированиями и учетными записями. Приложение предоставляет REST API для взаимодействия с данными об отелях, номерах и бронированиях.
+**HOTEL-v2-FINAL-** is a hotel booking application that allows users to search for hotels, book rooms, manage their reservations, and handle their accounts. The application provides a REST API for interacting with hotel, room, and booking data.
 
-## Основные функции
+## **Key Features**
 
-### Управление отелями и номерами:
-- Просмотр списка отелей с фильтрацией по городу и категории.
-- Получение информации о конкретном отеле.
-- Просмотр доступных номеров в отеле.
+### **Hotel and Room Management:**
+View a list of hotels with filtering by city and category.
+Retrieve details of a specific hotel.
+View available rooms in a hotel.
 
-### Бронирование номеров:
-- Создание, редактирование и удаление бронирований.
-- Фильтрация бронирований по пользователю и дате.
-- Массовое бронирование номеров.
+### **Room Booking:**
+Create, edit, and delete bookings.
+Filter bookings by user and date.
+Bulk booking of multiple rooms.
 
-### Пользователи и учетные записи:
-- Регистрация и аутентификация пользователей.
-- Управление профилем пользователя.
+### **Users and Accounts:**
+User registration and authentication.
+Manage user profiles.
 
-### Аналитика и логирование:
-- Отслеживание статистики бронирований.
-- Логирование всех операций.
-- Получение логов за указанный период.
+### **Analytics and Logging:**
+Track booking statistics.
+Log all operations.
+Retrieve logs for a specified period.
 
-### REST API:
-- Документировано с помощью Swagger.
-- Поддержка интеграции с внешними сервисами.
+### **REST API:**
+Documented using Swagger.
+Supports integration with external services.
 
-## Технологии
+## **Technologies Used**
 
-- **Язык программирования**: Java 17
-- **Фреймворк**: Spring Boot 3.x
-- **База данных**: PostgreSQL
-- **Сборка**: Maven
-- **Документация API**: Swagger
-- **Контейнеризация**: Docker
+**Programming Language**: Java 17
+**Framework**: Spring Boot 3.x
+**Database**: PostgreSQL
+**Build Tool**: Maven
+**API Documentation**: Swagger
+**Containerization**: Docker
 
-## Установка и запуск
+## **Installation and Setup**
 
-### Требования
+### **Requirements**
+Installed **Java 17** or later.
+Installed **Maven**.
+Installed **PostgreSQL**.
+Installed **Docker** (optional, for containerized deployment).
 
-- Установленная **Java 17** или выше.
-- Установленный **Maven**.
-- Установленная **PostgreSQL**.
-- Установленный **Docker** (опционально, для запуска в контейнере).
-
-### Шаги для запуска
-
+### **Steps to Run the Application**
 ```bash
 git clone https://github.com/magodididi/HOTEL-v2-FINAL-.git
 cd hotelbookingv2

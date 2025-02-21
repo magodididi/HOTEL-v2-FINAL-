@@ -2,7 +2,7 @@ package com.example.hotelbookingv2.service.impl;
 
 
 import com.example.hotelbookingv2.model.HotelEntity;
-import com.example.hotelbookingv2.repository.HotelRepository;  // Репозиторий для работы с памятью
+import com.example.hotelbookingv2.repository.HotelRepository;
 import com.example.hotelbookingv2.service.HotelService;
 import java.util.List;
 import java.util.Optional;
@@ -13,12 +13,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InMemoryHotelServiceImpl implements HotelService {
 
-    // Используем ваш репозиторий для работы в памяти
     private final HotelRepository hotelRepository;
 
     @Override
     public List<HotelEntity> getHotels(String city, String category) {
-        // Проверяем на наличие города и категории
         if (city != null && category != null) {
             return hotelRepository.findByCityAndCategory(city, category);
         }
