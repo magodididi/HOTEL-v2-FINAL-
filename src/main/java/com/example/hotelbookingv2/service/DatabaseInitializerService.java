@@ -6,6 +6,8 @@ import com.example.hotelbookingv2.model.RoomEntity;
 import com.example.hotelbookingv2.repository.FacilityRepository;
 import com.example.hotelbookingv2.repository.HotelRepository;
 import com.example.hotelbookingv2.repository.RoomRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class DatabaseInitializerService {
     private final HotelRepository hotelRepository;
     private final RoomRepository roomRepository;
     private final FacilityRepository facilityRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public DatabaseInitializerService(
             HotelRepository hotelRepository,
@@ -34,6 +39,15 @@ public class DatabaseInitializerService {
         roomRepository.deleteAll();
         facilityRepository.deleteAll();
         hotelRepository.deleteAll();
+        entityManager.createNativeQuery(
+                "ALTER SEQUENCE hotel_entity_id_seq RESTART WITH 1"
+        ).executeUpdate();
+        entityManager.createNativeQuery(
+                "ALTER SEQUENCE room_entity_id_seq RESTART WITH 1"
+        ).executeUpdate();
+        entityManager.createNativeQuery(
+                "ALTER SEQUENCE facilities_entity_id_seq RESTART WITH 1"
+        ).executeUpdate();
     }
 
     @Transactional
@@ -54,7 +68,7 @@ public class DatabaseInitializerService {
         // Новые отели
         HotelEntity luxResort = new HotelEntity();
         luxResort.setName("Lux Resort");
-        luxResort.setCity("New York");
+        luxResort.setCity("Los Angeles");
         luxResort.setCategory("5-star");
         luxResort.setAvailableFromDate("2024-03-10");
 

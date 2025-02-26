@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,13 @@ import lombok.ToString;
 public class FacilityEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "facilities_seq")
+    @SequenceGenerator(
+            name = "facilities_seq",
+            sequenceName = "facilities_id_seq",
+            allocationSize = 1
+    )
+
     private Long id;
 
     private String name;

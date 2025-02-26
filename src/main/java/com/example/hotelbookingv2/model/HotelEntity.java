@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,8 @@ import lombok.ToString;
 public class HotelEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hotel_seq")
+    @SequenceGenerator(name = "hotel_seq", sequenceName = "hotel_entity_id_seq", allocationSize = 1)
     private Long id;
 
     private String name;
