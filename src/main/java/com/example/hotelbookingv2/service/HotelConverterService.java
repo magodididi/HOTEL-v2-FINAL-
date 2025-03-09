@@ -7,7 +7,6 @@ import com.example.hotelbookingv2.model.FacilityEntity;
 import com.example.hotelbookingv2.model.HotelEntity;
 import com.example.hotelbookingv2.model.RoomEntity;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,9 +26,9 @@ public class HotelConverterService {
                                         facility.getId(),
                                         facility.getName()
                                 ))
-                                .collect(Collectors.toList())
+                                .toList() // Используем toList() вместо collect(Collectors.toList())
                 ))
-                .collect(Collectors.toList());
+                .toList(); // Используем toList() вместо collect(Collectors.toList())
 
         return new HotelDto(
                 hotel.getId(),
@@ -68,19 +67,17 @@ public class HotelConverterService {
                                 facility.setName(facilityDto.getName());
                                 return facility;
                             })
-                            .collect(Collectors.toList());
+                            .toList(); // Используем toList() вместо collect(Collectors.toList())
 
                     room.setFacilities(facilities);
                 }
 
                 return room;
-            }).collect(Collectors.toList());
+            }).toList(); // Используем toList() вместо collect(Collectors.toList())
 
             hotel.setRooms(roomEntities);
         }
 
         return hotel;
     }
-
-
 }
