@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -141,7 +140,7 @@ public class RoomRestController {
                 createdRoom.getType(),
                 createdRoom.getPrice(),
                 createdRoom.getHotel().getId(),  // ID отеля
-                new ArrayList<FacilityDto>()  // Пустой список удобств для нового объекта
+                new ArrayList<>()  // Пустой список удобств для нового объекта
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRoomDto);
@@ -171,8 +170,6 @@ public class RoomRestController {
         existingRoom.setPrice(updatedRoomDto.getPrice());
         existingRoom.setHotel(hotel);
 
-        RoomEntity updatedRoom = roomService.updateRoom(id, existingRoom);
-
         // Загружаем актуальные данные с удобствами
         RoomEntity savedRoom = roomService.getRoomById(id).orElseThrow();
 
@@ -184,7 +181,7 @@ public class RoomRestController {
                 savedRoom.getHotel().getId(),
                 savedRoom.getFacilities().stream()
                         .map(facility -> new FacilityDto(facility.getId(), facility.getName()))
-                        .collect(Collectors.toList()) // Добавляем удобства
+                        .toList() // Используем toList() вместо collect(Collectors.toList())
         );
 
         return ResponseEntity.ok(updatedRoomDtoResult);
