@@ -25,21 +25,21 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public List<HotelEntity> getHotelsByCity(String city) {
-        return hotelRepository.findByCity(city);  // Поиск только по городу
+        return hotelRepository.findByCity(city);
     }
 
     @Override
     public List<HotelEntity> getHotelsByCategory(String category) {
-        return hotelRepository.findByCategory(category);  // Поиск только по категории
+        return hotelRepository.findByCategory(category);
     }
 
     @Override
     public List<HotelEntity> getAllHotels() {
-        return hotelRepository.findAll();  // Возвращаем все отели, если параметры не переданы
+        return hotelRepository.findAll();
     }
 
     @Override
-    public Optional<HotelEntity> getHotelById(Long id) {
+    public Optional<HotelEntity> getHotelById(String id) {
         return hotelRepository.findById(id);
     }
 
@@ -49,20 +49,31 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public void deleteHotel(Long id) {
+    public void deleteHotel(String id) {
         hotelRepository.deleteById(id);
     }
 
     @Override
-    public HotelEntity updateHotel(Long id, HotelEntity updatedHotel) {
-        return hotelRepository.findById(id).map(hotel -> {
-            hotel.setName(updatedHotel.getName());
-            hotel.setCity(updatedHotel.getCity());
-            hotel.setCategory(updatedHotel.getCategory());
-            hotel.setAvailableFromDate(updatedHotel.getAvailableFromDate());
-            hotel.setRooms(updatedHotel.getRooms());
-            hotel.setFacilities(updatedHotel.getFacilities());
-            return hotelRepository.save(hotel);
+    public HotelEntity updateHotel(String id, HotelEntity updatedHotel) {
+        return hotelRepository.findById(id).map(existingHotel -> {
+            existingHotel.setName(updatedHotel.getName());
+            existingHotel.setCity(updatedHotel.getCity());
+            existingHotel.setCategory(updatedHotel.getCategory());
+            existingHotel.setAvailableFromDate(updatedHotel.getAvailableFromDate());
+
+            // Загружаем существующие комнаты, чтобы не терялись
+            if (updatedHotel.getRooms() != null && !updatedHotel.getRooms().isEmpty()) {
+                existingHotel.getRooms().clear(); // Очищаем текущие комнаты
+                existingHotel.getRooms().addAll(updatedHotel.getRooms()); // Добавляем новые
+            }
+
+            return hotelRepository.save(existingHotel);
         }).orElseThrow(() -> new RuntimeException("Hotel not found with id " + id));
     }
+
+
+
 }
+
+
+

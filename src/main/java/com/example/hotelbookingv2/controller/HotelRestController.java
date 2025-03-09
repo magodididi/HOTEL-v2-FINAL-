@@ -1,13 +1,15 @@
 package com.example.hotelbookingv2.controller;
 
+import com.example.hotelbookingv2.dto.HotelDto;
 import com.example.hotelbookingv2.exception.EntityNotFoundException;
 import com.example.hotelbookingv2.model.HotelEntity;
+import com.example.hotelbookingv2.service.HotelConverterService;
 import com.example.hotelbookingv2.service.HotelService;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,69 +27,76 @@ import org.springframework.web.bind.annotation.RestController;
 public class HotelRestController {
 
     private final HotelService hotelService;
+    private final HotelConverterService hotelConverterService;
     private static final Logger logger = LoggerFactory.getLogger(HotelRestController.class);
 
     @GetMapping
-    public List<HotelEntity> getHotels(@RequestParam(required = false) String city,
-                                       @RequestParam(required = false) String category) {
-        if (city != null && category != null) {
-            return hotelService.getHotels(city, category);
-        } else if (city != null) {
-            return hotelService.getHotelsByCity(city);
-        } else if (category != null) {
-            return hotelService.getHotelsByCategory(category);
-        } else {
-            return hotelService.getAllHotels();
-        }
-    }
+    public List<HotelDto> getHotels(@RequestParam(required = false) String city,
+                                    @RequestParam(required = false) String category) {
+        List<HotelEntity> hotels;
 
+        if (city != null && category != null) {
+            hotels = hotelService.getHotels(city, category);
+        } else if (city != null) {
+            hotels = hotelService.getHotelsByCity(city);
+        } else if (category != null) {
+            hotels = hotelService.getHotelsByCategory(category);
+        } else {
+            hotels = hotelService.getAllHotels();
+        }
+
+        return hotels.stream()
+                .map(hotelConverterService::convertToDto)
+                .toList();
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HotelEntity> getHotelById(@PathVariable Long id) {
+    public ResponseEntity<HotelDto> getHotelById(@PathVariable String id) {
         HotelEntity hotel = hotelService.getHotelById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Отель с ID " + id + " не найден"));
-        return ResponseEntity.ok(hotel);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<HotelEntity> updateHotel(
-            @PathVariable Long id,
-            @RequestBody HotelEntity updatedHotel
-    ) {
-        Optional<HotelEntity> existingHotel = hotelService.getHotelById(id);
-
-        if (existingHotel.isEmpty()) {
-            return ResponseEntity.notFound().build(); // Return 404 if hotel doesn't exist
-        }
-
-        try {
-            return ResponseEntity.ok(hotelService.updateHotel(id, updatedHotel));
-        } catch (RuntimeException e) {
-            logger.error("Error updating hotel with id: {}", id, e);
-            return ResponseEntity.status(500).build(); // Return 500 in case of other errors
-        }
+        return ResponseEntity.ok(hotelConverterService.convertToDto(hotel));
     }
 
     @PostMapping
-    public ResponseEntity<HotelEntity> createHotel(@RequestBody HotelEntity hotel) {
+    public ResponseEntity<HotelDto> createHotel(@RequestBody HotelDto hotelDto) {
         try {
-            HotelEntity createdHotel = hotelService.saveHotel(hotel);
-            return ResponseEntity.status(201).body(createdHotel); // Return 201 Created on success
+            HotelEntity hotelEntity = hotelConverterService.convertToEntity(hotelDto);
+            HotelEntity createdHotel = hotelService.saveHotel(hotelEntity);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(hotelConverterService.convertToDto(createdHotel));
         } catch (RuntimeException e) {
-            logger.error("Error creating hotel", e);
-            return ResponseEntity.badRequest().build(); // Return 400 if the hotel creation fails
+            logger.error("Ошибка при создании отеля", e);
+            return ResponseEntity.badRequest().build();
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteHotel(@PathVariable Long id) {
-        Optional<HotelEntity> hotel = hotelService.getHotelById(id);
-
-        if (hotel.isEmpty()) {
-            return ResponseEntity.notFound().build(); // Return 404 if hotel doesn't exist
+    @PutMapping("/{id}")
+    public ResponseEntity<HotelDto> updateHotel(
+            @PathVariable String id,
+            @RequestBody HotelDto updatedHotelDto
+    ) {
+        if (hotelService.getHotelById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
 
+        try {
+            HotelEntity updatedHotelEntity = hotelConverterService.convertToEntity(updatedHotelDto);
+            updatedHotelEntity.setId(id);
+            HotelEntity updatedHotel = hotelService.updateHotel(id, updatedHotelEntity);
+            return ResponseEntity.ok(hotelConverterService.convertToDto(updatedHotel));
+        } catch (RuntimeException e) {
+            logger.error("Ошибка при обновлении отеля с ID: {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteHotel(@PathVariable String id) {
+        if (hotelService.getHotelById(id).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
         hotelService.deleteHotel(id);
-        return ResponseEntity.noContent().build(); // Return 204 No Content on successful deletion
+        return ResponseEntity.noContent().build();
     }
 }

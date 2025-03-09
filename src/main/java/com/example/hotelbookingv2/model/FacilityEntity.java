@@ -1,19 +1,18 @@
 package com.example.hotelbookingv2.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Table(name = "facilities")
@@ -21,22 +20,15 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class FacilityEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "facilities_seq")
-    @SequenceGenerator(
-            name = "facilities_seq",
-            sequenceName = "facilities_id_seq",
-            allocationSize = 1
-    )
+    private String id = UUID.randomUUID().toString();
 
-    private Long id;
-
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "facilities")
-    @JsonBackReference
-    private List<HotelEntity> hotels;
+    @ManyToMany(mappedBy = "facilities", fetch = FetchType.LAZY)
+    private List<RoomEntity> rooms = new ArrayList<>();
 }
+

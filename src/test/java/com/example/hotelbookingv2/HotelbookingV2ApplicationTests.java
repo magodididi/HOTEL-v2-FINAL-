@@ -8,6 +8,6 @@ class HotelbookingV2ApplicationTests {
 
     @Test
     void contextLoads() {
-        // Test verifies that the Spring Boot
+        // Test verifies that the Spring Boodrft
     }
 }

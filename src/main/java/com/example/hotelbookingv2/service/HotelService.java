@@ -5,19 +5,20 @@ import java.util.List;
 import java.util.Optional;
 
 public interface HotelService {
+
     List<HotelEntity> getHotels(String city, String category);
 
-    List<HotelEntity> getHotelsByCity(String city);  // новый метод для поиска по городу
+    List<HotelEntity> getHotelsByCity(String city);
 
-    List<HotelEntity> getHotelsByCategory(String category);  // новый метод для поиска по категории
+    List<HotelEntity> getHotelsByCategory(String category);
 
-    List<HotelEntity> getAllHotels();  // метод для получения всех отелей
+    List<HotelEntity> getAllHotels();
 
-    Optional<HotelEntity> getHotelById(Long id);
+    Optional<HotelEntity> getHotelById(String id);
 
     HotelEntity saveHotel(HotelEntity hotel);
 
-    void deleteHotel(Long id);
+    void deleteHotel(String id);
 
-    HotelEntity updateHotel(Long id, HotelEntity updatedHotel);
+    HotelEntity updateHotel(String id, HotelEntity updatedHotel);
 }
