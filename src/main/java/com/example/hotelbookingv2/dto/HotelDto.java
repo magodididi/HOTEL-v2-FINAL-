@@ -7,10 +7,9 @@ public class HotelDto {
     private String name;
     private String city;
     private String category;
-    private String availableFromDate; // Добавить поле
+    private String availableFromDate;
     private List<RoomDto> rooms;
 
-    // Обновить конструктор
     public HotelDto(
             String id,
             String name,
@@ -27,7 +26,6 @@ public class HotelDto {
         this.rooms = rooms;
     }
 
-    // Геттеры и сеттеры
     public String getAvailableFromDate() {
         return availableFromDate;
     }
@@ -36,7 +34,6 @@ public class HotelDto {
         this.availableFromDate = availableFromDate;
     }
 
-    // Геттеры и сеттеры
     public String getId() {
         return id;
     }

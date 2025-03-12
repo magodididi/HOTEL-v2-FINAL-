@@ -24,14 +24,12 @@ public class FacilityController {
 
     private final FacilityService facilityService;
 
-    // Получить все удобства с их комнатами
     @GetMapping
     public ResponseEntity<List<FacilityDto>> getAllFacilities() {
         List<FacilityDto> facilities = facilityService.getAllFacilities();
         return ResponseEntity.ok(facilities);
     }
 
-    // Обновить существующее удобство
     @PutMapping("/{facilityId}")
     public ResponseEntity<FacilityDto> updateFacility(
             @PathVariable String facilityId,

@@ -69,8 +69,6 @@ public class HotelServiceImpl implements HotelService {
             return hotelRepository.save(existingHotel);
         }).orElseThrow(() -> new RuntimeException("Hotel not found with id " + id));
     }
-
-
 }
 
 

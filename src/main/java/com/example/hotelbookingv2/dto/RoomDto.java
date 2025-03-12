@@ -12,7 +12,6 @@ public class RoomDto {
     private String hotelId;
     private List<FacilityDto> facilities;
 
-    // Конструктор с 6 параметрами
     public RoomDto(
             String id,
             String roomNumber,
@@ -29,7 +28,6 @@ public class RoomDto {
         this.facilities = facilities;
     }
 
-    // Перегрузка конструктора с 4 параметрами
     public RoomDto(String roomNumber, String type, Double price, String hotelId) {
         this.id = UUID.randomUUID().toString(); // Генерируем ID автоматически
         this.roomNumber = roomNumber;
