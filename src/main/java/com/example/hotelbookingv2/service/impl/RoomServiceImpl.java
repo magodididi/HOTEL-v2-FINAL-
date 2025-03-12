@@ -18,7 +18,6 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
     private final FacilityRepository facilityRepository;
 
-    // Конструктор с инъекцией зависимостей
     public RoomServiceImpl(RoomRepository roomRepository, FacilityRepository facilityRepository) {
         this.roomRepository = roomRepository;
         this.facilityRepository = facilityRepository;
@@ -28,7 +27,7 @@ public class RoomServiceImpl implements RoomService {
     public List<RoomEntity> getAllRooms() {
         List<RoomEntity> rooms = roomRepository.findAll();
         rooms.forEach(room -> room.getFacilities()
-                .forEach(facility -> {})); // Подгружаем удобства (без использования size())
+                .forEach(facility -> {}));
         return rooms;
     }
 
@@ -36,7 +35,7 @@ public class RoomServiceImpl implements RoomService {
     public List<RoomEntity> getRoomsByHotel(String hotelId) {
         List<RoomEntity> rooms = roomRepository.findByHotelId(hotelId);
         rooms.forEach(room -> room.getFacilities()
-                .forEach(facility -> {})); // Подгружаем удобства (без использования size())
+                .forEach(facility -> {}));
         return rooms;
     }
 
@@ -44,7 +43,7 @@ public class RoomServiceImpl implements RoomService {
     public Optional<RoomEntity> getRoomById(String id) {
         Optional<RoomEntity> roomOpt = roomRepository.findById(id);
         roomOpt.ifPresent(room -> room.getFacilities()
-                .forEach(facility -> {})); // Гарантируем загрузку удобств
+                .forEach(facility -> {}));
         return roomOpt;
     }
 
@@ -75,15 +74,15 @@ public class RoomServiceImpl implements RoomService {
                                     "Удобство не найдено: " + facility.getId()
                             ));
                     if (!room.getFacilities().contains(existingFacility)) {
-                        room.addFacility(existingFacility); // Добавляем удобство в комнату
+                        room.addFacility(existingFacility);
                     }
                 }
             }
 
-            return roomRepository.save(room); // Сохраняем обновленную комнату
+            return roomRepository.save(room);
         }).orElseThrow(() -> new RuntimeException(
                 "Room not found with id " + id)
-        ); // Если комната не найдена
+        );
     }
 }
 

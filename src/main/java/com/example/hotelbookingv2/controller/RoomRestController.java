@@ -37,7 +37,7 @@ public class RoomRestController {
 
         List<RoomDto> roomDtos = rooms.stream()
                 .map(room -> new RoomDto(
-                        room.getId(),  // Передаем ID комнаты
+                        room.getId(),
                         room.getRoomNumber(),
                         room.getType(),
                         room.getPrice(),
@@ -47,15 +47,12 @@ public class RoomRestController {
                                         facility.getId(),
                                         facility.getName()
                                 ))
-                                .toList() // Используем toList() вместо collect(Collectors.toList())
+                                .toList()
                 ))
-                .toList(); // Используем toList() вместо collect(Collectors.toList())
+                .toList();
 
         return ResponseEntity.ok(roomDtos);
     }
-
-
-
 
     @GetMapping("/hotel/{hotelId}")
     public List<RoomDto> getRoomsByHotel(@PathVariable String hotelId) {
@@ -68,9 +65,9 @@ public class RoomRestController {
                                         f.getId(),
                                         f.getName())
                                 )
-                                .toList() // Используем toList() вместо collect(Collectors.toList())
+                                .toList()
                 ))
-                .toList(); // Используем toList() вместо collect(Collectors.toList())
+                .toList();
     }
 
     @GetMapping("/{id}")
@@ -88,7 +85,7 @@ public class RoomRestController {
                 room.getHotel().getId(),
                 room.getFacilities().stream()
                         .map(f -> new FacilityDto(f.getId(), f.getName()))
-                        .toList() // Используем toList() вместо collect(Collectors.toList())
+                        .toList()
         );
 
         return ResponseEntity.ok(roomDto);
@@ -109,11 +106,9 @@ public class RoomRestController {
                                 facility.getId(),
                                 facility.getName())
                         )
-                        .toList() // Используем toList() вместо collect(Collectors.toList())
+                        .toList()
         );
     }
-
-
 
     @PostMapping
     public ResponseEntity<RoomDto> createRoom(@RequestBody RoomDto roomCreateDto) {
@@ -135,12 +130,12 @@ public class RoomRestController {
 
         RoomEntity createdRoom = roomService.saveRoom(room);
         RoomDto createdRoomDto = new RoomDto(
-                createdRoom.getId(),  // Добавляем id комнаты
+                createdRoom.getId(),
                 createdRoom.getRoomNumber(),
                 createdRoom.getType(),
                 createdRoom.getPrice(),
-                createdRoom.getHotel().getId(),  // ID отеля
-                new ArrayList<>()  // Пустой список удобств для нового объекта
+                createdRoom.getHotel().getId(),
+                new ArrayList<>()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdRoomDto);
@@ -170,7 +165,6 @@ public class RoomRestController {
         existingRoom.setPrice(updatedRoomDto.getPrice());
         existingRoom.setHotel(hotel);
 
-        // Загружаем актуальные данные с удобствами
         RoomEntity savedRoom = roomService.getRoomById(id).orElseThrow();
 
         RoomDto updatedRoomDtoResult = new RoomDto(
@@ -181,7 +175,7 @@ public class RoomRestController {
                 savedRoom.getHotel().getId(),
                 savedRoom.getFacilities().stream()
                         .map(facility -> new FacilityDto(facility.getId(), facility.getName()))
-                        .toList() // Используем toList() вместо collect(Collectors.toList())
+                        .toList()
         );
 
         return ResponseEntity.ok(updatedRoomDtoResult);

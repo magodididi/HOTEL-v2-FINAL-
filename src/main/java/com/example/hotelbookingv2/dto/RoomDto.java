@@ -42,8 +42,6 @@ public class RoomDto {
     public RoomDto() {
     }
 
-
-
     public String getId() {
         return id;
     }

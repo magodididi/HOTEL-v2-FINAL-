@@ -4,12 +4,15 @@ import com.example.hotelbookingv2.dto.FacilityDto;
 import com.example.hotelbookingv2.exception.EntityNotFoundException;
 import com.example.hotelbookingv2.model.FacilityEntity;
 import com.example.hotelbookingv2.service.FacilityService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +23,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class FacilityController {
 
     private final FacilityService facilityService;
+
+    // Получить все удобства с их комнатами
+    @GetMapping
+    public ResponseEntity<List<FacilityDto>> getAllFacilities() {
+        List<FacilityDto> facilities = facilityService.getAllFacilities();
+        return ResponseEntity.ok(facilities);
+    }
+
+    // Обновить существующее удобство
+    @PutMapping("/{facilityId}")
+    public ResponseEntity<FacilityDto> updateFacility(
+            @PathVariable String facilityId,
+            @RequestBody FacilityDto facilityDto) {
+        try {
+            FacilityDto updatedFacility = facilityService.updateFacility(facilityId, facilityDto);
+            return ResponseEntity.ok(updatedFacility);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @PostMapping
     public ResponseEntity<FacilityDto> createFacility(@RequestBody FacilityDto facilityDto) {
@@ -32,7 +55,6 @@ public class FacilityController {
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
-
 
     @PostMapping("/{roomId}/add/{facilityId}")
     public ResponseEntity<Void> addFacilityToRoom(

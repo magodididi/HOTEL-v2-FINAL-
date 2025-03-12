@@ -35,7 +35,7 @@ public class RoomEntity {
     private String type;
     private Double price;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Делаем ленивую загрузку
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
     @JsonBackReference
     private HotelEntity hotel;
@@ -51,7 +51,7 @@ public class RoomEntity {
     public void addFacility(FacilityEntity facility) {
         if (!facilities.contains(facility)) {
             facilities.add(facility);
-            facility.getRooms().add(this); // ✅ Двусторонняя связь
+            facility.getRooms().add(this);
         }
     }
 

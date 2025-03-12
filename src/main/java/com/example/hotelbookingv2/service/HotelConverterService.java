@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class HotelConverterService {
 
-    // Метод для конвертации из сущности в DTO
     public HotelDto convertToDto(HotelEntity hotel) {
         List<RoomDto> rooms = hotel.getRooms().stream()
                 .map(room -> new RoomDto(
@@ -26,21 +25,20 @@ public class HotelConverterService {
                                         facility.getId(),
                                         facility.getName()
                                 ))
-                                .toList() // Используем toList() вместо collect(Collectors.toList())
+                                .toList()
                 ))
-                .toList(); // Используем toList() вместо collect(Collectors.toList())
+                .toList();
 
         return new HotelDto(
                 hotel.getId(),
                 hotel.getName(),
                 hotel.getCity(),
                 hotel.getCategory(),
-                hotel.getAvailableFromDate(), // Добавляем дату
+                hotel.getAvailableFromDate(),
                 rooms
         );
     }
 
-    // Метод для конвертации из DTO в сущность
     public HotelEntity convertToEntity(HotelDto hotelDto) {
         HotelEntity hotel = new HotelEntity();
         hotel.setId(hotelDto.getId());
@@ -49,7 +47,6 @@ public class HotelConverterService {
         hotel.setCategory(hotelDto.getCategory());
         hotel.setAvailableFromDate(hotelDto.getAvailableFromDate());
 
-        // Проверяем, переданы ли комнаты
         if (hotelDto.getRooms() != null) {
             List<RoomEntity> roomEntities = hotelDto.getRooms().stream().map(roomDto -> {
                 RoomEntity room = new RoomEntity();
@@ -67,13 +64,13 @@ public class HotelConverterService {
                                 facility.setName(facilityDto.getName());
                                 return facility;
                             })
-                            .toList(); // Используем toList() вместо collect(Collectors.toList())
+                            .toList();
 
                     room.setFacilities(facilities);
                 }
 
                 return room;
-            }).toList(); // Используем toList() вместо collect(Collectors.toList())
+            }).toList();
 
             hotel.setRooms(roomEntities);
         }

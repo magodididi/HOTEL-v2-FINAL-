@@ -61,16 +61,14 @@ public class HotelServiceImpl implements HotelService {
             existingHotel.setCategory(updatedHotel.getCategory());
             existingHotel.setAvailableFromDate(updatedHotel.getAvailableFromDate());
 
-            // Загружаем существующие комнаты, чтобы не терялись
             if (updatedHotel.getRooms() != null && !updatedHotel.getRooms().isEmpty()) {
-                existingHotel.getRooms().clear(); // Очищаем текущие комнаты
-                existingHotel.getRooms().addAll(updatedHotel.getRooms()); // Добавляем новые
+                existingHotel.getRooms().clear();
+                existingHotel.getRooms().addAll(updatedHotel.getRooms());
             }
 
             return hotelRepository.save(existingHotel);
         }).orElseThrow(() -> new RuntimeException("Hotel not found with id " + id));
     }
-
 
 
 }
