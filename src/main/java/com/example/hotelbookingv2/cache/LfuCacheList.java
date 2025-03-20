@@ -29,7 +29,7 @@ public abstract class LfuCacheList<T> {
         Entry<List<T>> entry = cache.get(id);
         if (entry == null) {
             log.info("❌ LFU Cache: Item NOT found in cache. ID: {}", id);
-            return null;
+            return entry.value;
         }
 
         entry.frequency++;
