@@ -2,6 +2,7 @@ package com.example.hotelbookingv2.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,7 +27,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RoomEntity {
+public class Room {
 
     @Id
     private String id = UUID.randomUUID().toString();
@@ -38,7 +39,7 @@ public class RoomEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id", nullable = false)
     @JsonBackReference
-    private HotelEntity hotel;
+    private Hotel hotel;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -46,16 +47,17 @@ public class RoomEntity {
             joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "facility_id")
     )
-    private List<FacilityEntity> facilities = new ArrayList<>();
+    @JsonManagedReference
+    private List<Facility> facilities = new ArrayList<>();
 
-    public void addFacility(FacilityEntity facility) {
+    public void addFacility(Facility facility) {
         if (!facilities.contains(facility)) {
             facilities.add(facility);
             facility.getRooms().add(this);
         }
     }
 
-    public void removeFacility(FacilityEntity facility) {
+    public void removeFacility(Facility facility) {
         facilities.remove(facility);
         facility.getRooms().remove(this);
     }

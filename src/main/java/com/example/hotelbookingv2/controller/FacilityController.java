@@ -2,7 +2,7 @@ package com.example.hotelbookingv2.controller;
 
 import com.example.hotelbookingv2.dto.FacilityDto;
 import com.example.hotelbookingv2.exception.EntityNotFoundException;
-import com.example.hotelbookingv2.model.FacilityEntity;
+import com.example.hotelbookingv2.model.Facility;
 import com.example.hotelbookingv2.service.FacilityService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -44,9 +44,9 @@ public class FacilityController {
 
     @PostMapping
     public ResponseEntity<FacilityDto> createFacility(@RequestBody FacilityDto facilityDto) {
-        FacilityEntity facility = new FacilityEntity();
+        Facility facility = new Facility();
         facility.setName(facilityDto.getName());
-        FacilityEntity savedFacility = facilityService.saveFacility(facility);
+        Facility savedFacility = facilityService.saveFacility(facility);
 
         FacilityDto responseDto = new FacilityDto(
                 savedFacility.getId(), savedFacility.getName()

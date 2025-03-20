@@ -1,24 +1,24 @@
 package com.example.hotelbookingv2.service;
 
-import com.example.hotelbookingv2.model.HotelEntity;
+import com.example.hotelbookingv2.model.Hotel;
 import java.util.List;
 import java.util.Optional;
 
 public interface HotelService {
 
-    List<HotelEntity> getHotels(String city, String category);
+    List<Hotel> getHotels(String city, String category);
 
-    List<HotelEntity> getHotelsByCity(String city);
+    List<Hotel> getHotelsByCity(String city);
 
-    List<HotelEntity> getHotelsByCategory(String category);
+    List<Hotel> getHotelsByCategory(String category);
 
-    List<HotelEntity> getAllHotels();
+    List<Hotel> getAllHotels();
 
-    Optional<HotelEntity> getHotelById(String id);
+    Optional<Hotel> getHotelById(String id);
 
-    HotelEntity saveHotel(HotelEntity hotel);
+    Hotel saveHotel(Hotel hotel);
 
     void deleteHotel(String id);
 
-    HotelEntity updateHotel(String id, HotelEntity updatedHotel);
+    Hotel updateHotel(String id, Hotel updatedHotel);
 }

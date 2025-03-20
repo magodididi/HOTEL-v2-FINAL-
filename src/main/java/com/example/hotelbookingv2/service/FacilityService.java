@@ -1,8 +1,8 @@
 package com.example.hotelbookingv2.service;
 
 import com.example.hotelbookingv2.dto.FacilityDto;
-import com.example.hotelbookingv2.model.FacilityEntity;
-import com.example.hotelbookingv2.model.RoomEntity;
+import com.example.hotelbookingv2.model.Facility;
+import com.example.hotelbookingv2.model.Room;
 import com.example.hotelbookingv2.repository.FacilityRepository;
 import com.example.hotelbookingv2.repository.RoomRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,7 +20,7 @@ public class FacilityService {
 
     @Transactional
     public List<FacilityDto> getAllFacilities() {
-        List<FacilityEntity> facilities = facilityRepository.findAll();
+        List<Facility> facilities = facilityRepository.findAll();
         return facilities.stream()
                 .map(facility -> new FacilityDto(facility.getId(), facility.getName()))
                 .toList();
@@ -28,7 +28,7 @@ public class FacilityService {
 
     @Transactional
     public FacilityDto updateFacility(String facilityId, FacilityDto facilityDto) {
-        FacilityEntity facility = facilityRepository.findById(facilityId)
+        Facility facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new EntityNotFoundException("Такого удобства не найдено"));
 
         facility.setName(facilityDto.getName());
@@ -39,10 +39,10 @@ public class FacilityService {
 
     @Transactional
     public void addFacilityToRoom(String roomId, String facilityId) {
-        RoomEntity room = roomRepository.findById(roomId)
+        Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new EntityNotFoundException("Комната не найдена"));
 
-        FacilityEntity facility = facilityRepository.findById(facilityId)
+        Facility facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new EntityNotFoundException("Facilities не найдено"));
 
         room.addFacility(facility);
@@ -51,10 +51,10 @@ public class FacilityService {
 
     @Transactional
     public void removeFacilityFromRoom(String roomId, String facilityId) {
-        RoomEntity room = roomRepository.findById(roomId)
+        Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new EntityNotFoundException("Комната не найдена"));
 
-        FacilityEntity facility = facilityRepository.findById(facilityId)
+        Facility facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new EntityNotFoundException("Удобство не найдено"));
 
         if (!room.getFacilities().contains(facility)) {
@@ -67,14 +67,14 @@ public class FacilityService {
 
     @Transactional
     public void deleteFacility(String facilityId) {
-        FacilityEntity facility = facilityRepository.findById(facilityId)
+        Facility facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new EntityNotFoundException("Удобство не найдено"));
 
         facility.getRooms().forEach(room -> room.getFacilities().remove(facility));
         facilityRepository.delete(facility);
     }
 
-    public FacilityEntity saveFacility(FacilityEntity facility) {
+    public Facility saveFacility(Facility facility) {
         return facilityRepository.save(facility);
     }
 }

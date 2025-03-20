@@ -1,5 +1,6 @@
 package com.example.hotelbookingv2.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,7 +21,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FacilityEntity {
+public class Facility {
 
     @Id
     private String id = UUID.randomUUID().toString();
@@ -29,6 +30,7 @@ public class FacilityEntity {
     private String name;
 
     @ManyToMany(mappedBy = "facilities", fetch = FetchType.LAZY)
-    private List<RoomEntity> rooms = new ArrayList<>();
+    @JsonBackReference
+    private List<Room> rooms = new ArrayList<>();
 }
 

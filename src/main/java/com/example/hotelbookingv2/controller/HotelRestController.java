@@ -2,7 +2,7 @@ package com.example.hotelbookingv2.controller;
 
 import com.example.hotelbookingv2.dto.HotelDto;
 import com.example.hotelbookingv2.exception.EntityNotFoundException;
-import com.example.hotelbookingv2.model.HotelEntity;
+import com.example.hotelbookingv2.model.Hotel;
 import com.example.hotelbookingv2.service.HotelConverterService;
 import com.example.hotelbookingv2.service.HotelService;
 import java.util.List;
@@ -33,18 +33,7 @@ public class HotelRestController {
     @GetMapping
     public List<HotelDto> getHotels(@RequestParam(required = false) String city,
                                     @RequestParam(required = false) String category) {
-        List<HotelEntity> hotels;
-
-        if (city != null && category != null) {
-            hotels = hotelService.getHotels(city, category);
-        } else if (city != null) {
-            hotels = hotelService.getHotelsByCity(city);
-        } else if (category != null) {
-            hotels = hotelService.getHotelsByCategory(category);
-        } else {
-            hotels = hotelService.getAllHotels();
-        }
-
+        List<Hotel> hotels = hotelService.getHotels(city, category);
         return hotels.stream()
                 .map(hotelConverterService::convertToDto)
                 .toList();
@@ -52,7 +41,7 @@ public class HotelRestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<HotelDto> getHotelById(@PathVariable String id) {
-        HotelEntity hotel = hotelService.getHotelById(id)
+        Hotel hotel = hotelService.getHotelById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Отель с ID " + id + " не найден"));
         return ResponseEntity.ok(hotelConverterService.convertToDto(hotel));
     }
@@ -60,8 +49,8 @@ public class HotelRestController {
     @PostMapping
     public ResponseEntity<HotelDto> createHotel(@RequestBody HotelDto hotelDto) {
         try {
-            HotelEntity hotelEntity = hotelConverterService.convertToEntity(hotelDto);
-            HotelEntity createdHotel = hotelService.saveHotel(hotelEntity);
+            Hotel hotel = hotelConverterService.convertToEntity(hotelDto);
+            Hotel createdHotel = hotelService.saveHotel(hotel);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(hotelConverterService.convertToDto(createdHotel));
         } catch (RuntimeException e) {
@@ -80,16 +69,15 @@ public class HotelRestController {
         }
 
         try {
-            HotelEntity updatedHotelEntity = hotelConverterService.convertToEntity(updatedHotelDto);
+            Hotel updatedHotelEntity = hotelConverterService.convertToEntity(updatedHotelDto);
             updatedHotelEntity.setId(id);
-            HotelEntity updatedHotel = hotelService.updateHotel(id, updatedHotelEntity);
+            Hotel updatedHotel = hotelService.updateHotel(id, updatedHotelEntity);
             return ResponseEntity.ok(hotelConverterService.convertToDto(updatedHotel));
         } catch (RuntimeException e) {
             logger.error("Ошибка при обновлении отеля с ID: {}", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteHotel(@PathVariable String id) {

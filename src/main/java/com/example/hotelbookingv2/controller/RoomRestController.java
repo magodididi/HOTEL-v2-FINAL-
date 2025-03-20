@@ -3,8 +3,8 @@ package com.example.hotelbookingv2.controller;
 import com.example.hotelbookingv2.dto.FacilityDto;
 import com.example.hotelbookingv2.dto.RoomDto;
 import com.example.hotelbookingv2.exception.EntityNotFoundException;
-import com.example.hotelbookingv2.model.HotelEntity;
-import com.example.hotelbookingv2.model.RoomEntity;
+import com.example.hotelbookingv2.model.Hotel;
+import com.example.hotelbookingv2.model.Room;
 import com.example.hotelbookingv2.repository.HotelRepository;
 import com.example.hotelbookingv2.service.RoomService;
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,7 +34,7 @@ public class RoomRestController {
 
     @GetMapping
     public ResponseEntity<List<RoomDto>> getAllRooms() {
-        List<RoomEntity> rooms = roomService.getAllRooms();
+        List<Room> rooms = roomService.getAllRooms();
 
         List<RoomDto> roomDtos = rooms.stream()
                 .map(room -> new RoomDto(
@@ -54,28 +55,26 @@ public class RoomRestController {
         return ResponseEntity.ok(roomDtos);
     }
 
-    @GetMapping("/hotel/{hotelId}")
-    public List<RoomDto> getRoomsByHotel(@PathVariable String hotelId) {
-        return roomService.getRoomsByHotel(hotelId).stream()
-                .map(room -> new RoomDto(
-                        room.getId(), room.getRoomNumber(), room.getType(), room.getPrice(),
-                        room.getHotel().getId(),
-                        room.getFacilities().stream()
-                                .map(f -> new FacilityDto(
-                                        f.getId(),
-                                        f.getName())
-                                )
-                                .toList()
-                ))
-                .toList();
+
+
+    @GetMapping("/by-hotels/{hotelId}")
+    public ResponseEntity<List<Room>> getRoomsByHotel(@PathVariable String hotelId) {
+        List<Room> rooms = roomService.findRoomsByHotel(hotelId);
+        return ResponseEntity.ok(rooms);
+    }
+
+    @GetMapping("/by-facility")
+    public ResponseEntity<List<Room>> getRoomsByFacility(@RequestParam String facilityName) {
+        List<Room> rooms = roomService.findRoomsByFacility(facilityName);
+        return ResponseEntity.ok(rooms);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RoomDto> getRoomById(@PathVariable String id) {
-        RoomEntity room = roomService.getRoomById(id)
+        Room room = roomService.getRoomById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Комната с ID " + id + " не найдена"
-                ));
+                        "Комната с ID " + id + " не найдена")
+                );
 
         RoomDto roomDto = new RoomDto(
                 room.getId(),
@@ -91,11 +90,9 @@ public class RoomRestController {
         return ResponseEntity.ok(roomDto);
     }
 
-
-
     @GetMapping("/{roomId}/facilities")
     public ResponseEntity<List<FacilityDto>> getFacilitiesByRoom(@PathVariable String roomId) {
-        RoomEntity room = roomService.getRoomById(roomId)
+        Room room = roomService.getRoomById(roomId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Комната с ID " + roomId + " не найдена"
                 ));
@@ -116,19 +113,19 @@ public class RoomRestController {
             return ResponseEntity.badRequest().build();
         }
 
-        HotelEntity hotel = hotelRepository.findById(roomCreateDto.getHotelId())
+        Hotel hotel = hotelRepository.findById(roomCreateDto.getHotelId())
                 .orElseThrow(() -> new RuntimeException(
                         "Отель не найден с ID " + roomCreateDto.getHotelId()
                 ));
 
-        RoomEntity room = new RoomEntity();
+        Room room = new Room();
         room.setRoomNumber(roomCreateDto.getRoomNumber());
         room.setType(roomCreateDto.getType());
         room.setPrice(roomCreateDto.getPrice());
         room.setHotel(hotel);
         room.setId(UUID.randomUUID().toString());
 
-        RoomEntity createdRoom = roomService.saveRoom(room);
+        Room createdRoom = roomService.saveRoom(room);
         RoomDto createdRoomDto = new RoomDto(
                 createdRoom.getId(),
                 createdRoom.getRoomNumber(),
@@ -147,15 +144,15 @@ public class RoomRestController {
             @PathVariable String id,
             @RequestBody RoomDto updatedRoomDto
     ) {
-        Optional<RoomEntity> existingRoomOpt = roomService.getRoomById(id);
+        Optional<Room> existingRoomOpt = roomService.getRoomById(id);
 
         if (existingRoomOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        RoomEntity existingRoom = existingRoomOpt.get();
+        Room existingRoom = existingRoomOpt.get();
 
-        HotelEntity hotel = hotelRepository.findById(updatedRoomDto.getHotelId())
+        Hotel hotel = hotelRepository.findById(updatedRoomDto.getHotelId())
                 .orElseThrow(() -> new RuntimeException(
                         "Отель не найден с ID " + updatedRoomDto.getHotelId()
                 ));
@@ -165,7 +162,7 @@ public class RoomRestController {
         existingRoom.setPrice(updatedRoomDto.getPrice());
         existingRoom.setHotel(hotel);
 
-        RoomEntity savedRoom = roomService.getRoomById(id).orElseThrow();
+        Room savedRoom = roomService.getRoomById(id).orElseThrow();
 
         RoomDto updatedRoomDtoResult = new RoomDto(
                 savedRoom.getId(),

@@ -3,16 +3,16 @@ package com.example.hotelbookingv2.service;
 import com.example.hotelbookingv2.dto.FacilityDto;
 import com.example.hotelbookingv2.dto.HotelDto;
 import com.example.hotelbookingv2.dto.RoomDto;
-import com.example.hotelbookingv2.model.FacilityEntity;
-import com.example.hotelbookingv2.model.HotelEntity;
-import com.example.hotelbookingv2.model.RoomEntity;
+import com.example.hotelbookingv2.model.Facility;
+import com.example.hotelbookingv2.model.Hotel;
+import com.example.hotelbookingv2.model.Room;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
 public class HotelConverterService {
 
-    public HotelDto convertToDto(HotelEntity hotel) {
+    public HotelDto convertToDto(Hotel hotel) {
         List<RoomDto> rooms = hotel.getRooms().stream()
                 .map(room -> new RoomDto(
                         room.getId(),
@@ -39,8 +39,8 @@ public class HotelConverterService {
         );
     }
 
-    public HotelEntity convertToEntity(HotelDto hotelDto) {
-        HotelEntity hotel = new HotelEntity();
+    public Hotel convertToEntity(HotelDto hotelDto) {
+        Hotel hotel = new Hotel();
         hotel.setId(hotelDto.getId());
         hotel.setName(hotelDto.getName());
         hotel.setCity(hotelDto.getCity());
@@ -48,8 +48,8 @@ public class HotelConverterService {
         hotel.setAvailableFromDate(hotelDto.getAvailableFromDate());
 
         if (hotelDto.getRooms() != null) {
-            List<RoomEntity> roomEntities = hotelDto.getRooms().stream().map(roomDto -> {
-                RoomEntity room = new RoomEntity();
+            List<Room> roomEntities = hotelDto.getRooms().stream().map(roomDto -> {
+                Room room = new Room();
                 room.setId(roomDto.getId());
                 room.setRoomNumber(roomDto.getRoomNumber());
                 room.setType(roomDto.getType());
@@ -57,9 +57,9 @@ public class HotelConverterService {
                 room.setHotel(hotel);
 
                 if (roomDto.getFacilities() != null) {
-                    List<FacilityEntity> facilities = roomDto.getFacilities().stream()
+                    List<Facility> facilities = roomDto.getFacilities().stream()
                             .map(facilityDto -> {
-                                FacilityEntity facility = new FacilityEntity();
+                                Facility facility = new Facility();
                                 facility.setId(facilityDto.getId());
                                 facility.setName(facilityDto.getName());
                                 return facility;

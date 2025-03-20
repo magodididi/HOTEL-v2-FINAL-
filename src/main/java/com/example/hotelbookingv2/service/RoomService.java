@@ -1,19 +1,24 @@
 package com.example.hotelbookingv2.service;
 
-import com.example.hotelbookingv2.model.RoomEntity;
+import com.example.hotelbookingv2.model.Room;
 import java.util.List;
 import java.util.Optional;
 
 public interface RoomService {
-    List<RoomEntity> getRoomsByHotel(String hotelId);
 
-    Optional<RoomEntity> getRoomById(String id);
+    List<Room> findRoomsByHotel(String hotelId);
 
-    RoomEntity saveRoom(RoomEntity room);
+    List<Room> findRoomsByFacility(String facilityName);
+
+    List<Room> getRoomsByHotel(String hotelId);
+
+    Optional<Room> getRoomById(String id);
+
+    Room saveRoom(Room room);
 
     void deleteRoom(String id);
 
-    RoomEntity updateRoom(String id, RoomEntity updatedRoom);
+    Room updateRoom(String id, Room updatedRoom);
 
-    List<RoomEntity> getAllRooms();
+    List<Room> getAllRooms();  // Добавлен метод!
 }

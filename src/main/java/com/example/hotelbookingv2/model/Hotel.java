@@ -27,7 +27,7 @@ import org.hibernate.annotations.GenericGenerator;
 @AllArgsConstructor
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class HotelEntity {
+public class Hotel {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -41,6 +41,6 @@ public class HotelEntity {
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<RoomEntity> rooms = new ArrayList<>();
+    private List<Room> rooms = new ArrayList<>();
 }
 
