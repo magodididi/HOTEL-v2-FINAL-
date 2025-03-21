@@ -10,23 +10,4 @@ public class LfuCacheList<T> extends LfuCacheBase<List<T>> {
         super(capacity);
     }
 
-    @Override
-    public List<T> get(String id) {
-        return super.get(id);
-    }
-
-    @Override
-    public void put(String id, List<T> value) {
-        super.put(id, value);
-    }
-
-    @Override
-    public void remove(String id) {
-        super.remove(id);
-    }
-
-    @Override
-    public void clear() {
-        super.clear();
-    }
 }
