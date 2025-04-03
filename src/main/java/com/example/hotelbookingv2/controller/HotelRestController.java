@@ -1,14 +1,16 @@
 package com.example.hotelbookingv2.controller;
 
 import com.example.hotelbookingv2.dto.HotelDto;
-import com.example.hotelbookingv2.exception.EntityNotFoundException;
+import com.example.hotelbookingv2.exception.ResourceNotFoundException;
 import com.example.hotelbookingv2.model.Hotel;
 import com.example.hotelbookingv2.service.HotelConverterService;
 import com.example.hotelbookingv2.service.HotelService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Отели", description = "Управление отелями") // Описание всего контроллера
 @RestController
 @RequestMapping("/hotels")
 @RequiredArgsConstructor
@@ -28,62 +31,61 @@ public class HotelRestController {
 
     private final HotelService hotelService;
     private final HotelConverterService hotelConverterService;
-    private static final Logger logger = LoggerFactory.getLogger(HotelRestController.class);
 
+    @Operation(summary = "Получить список отелей",
+            description = "Позволяет получить список отелей с фильтрацией по городу и категории")
     @GetMapping
-    public List<HotelDto> getHotels(@RequestParam(required = false) String city,
-                                    @RequestParam(required = false) String category) {
+    public ResponseEntity<List<HotelDto>> getHotels(
+            @Parameter(description = "Город, в котором находится отель")
+            @RequestParam(required = false) String city,
+            @Parameter(description = "Категория отеля (например, 5 звезд)")
+            @RequestParam(required = false) String category) {
         List<Hotel> hotels = hotelService.getHotels(city, category);
-        return hotels.stream()
+        List<HotelDto> hotelDtos = hotels.stream()
                 .map(hotelConverterService::convertToDto)
                 .toList();
+        return ResponseEntity.ok(hotelDtos);
     }
 
+    @Operation(summary = "Получить отель по ID",
+            description = "Возвращает информацию об отеле по его уникальному идентификатору")
     @GetMapping("/{id}")
-    public ResponseEntity<HotelDto> getHotelById(@PathVariable String id) {
-        Hotel hotel = hotelService.getHotelById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Отель с ID " + id + " не найден"));
-        return ResponseEntity.ok(hotelConverterService.convertToDto(hotel));
+    public ResponseEntity<HotelDto> getHotelById(
+            @Parameter(description = "Идентификатор отеля") @PathVariable String id) {
+        return hotelService.getHotelById(id)
+                .map(hotel -> ResponseEntity.ok(hotelConverterService.convertToDto(hotel)))
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Отель с ID " + id + " не найден"));
     }
 
+    @Operation(summary = "Создать новый отель", description = "Создает и возвращает новый отель")
     @PostMapping
-    public ResponseEntity<HotelDto> createHotel(@RequestBody HotelDto hotelDto) {
-        try {
-            Hotel hotel = hotelConverterService.convertToEntity(hotelDto);
-            Hotel createdHotel = hotelService.saveHotel(hotel);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(hotelConverterService.convertToDto(createdHotel));
-        } catch (RuntimeException e) {
-            logger.error("Ошибка при создании отеля", e);
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<HotelDto> createHotel(
+            @Parameter(description = "Данные нового отеля") @Valid @RequestBody HotelDto hotelDto) {
+        Hotel hotel = hotelConverterService.convertToEntity(hotelDto);
+        Hotel createdHotel = hotelService.saveHotel(hotel);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(hotelConverterService.convertToDto(createdHotel));
     }
 
+    @Operation(summary = "Обновить информацию об отеле",
+            description = "Изменяет информацию об отеле по ID")
     @PutMapping("/{id}")
     public ResponseEntity<HotelDto> updateHotel(
+            @Parameter(description = "Идентификатор отеля")
             @PathVariable String id,
-            @RequestBody HotelDto updatedHotelDto
-    ) {
-        if (hotelService.getHotelById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        try {
-            Hotel updatedHotelEntity = hotelConverterService.convertToEntity(updatedHotelDto);
-            updatedHotelEntity.setId(id);
-            Hotel updatedHotel = hotelService.updateHotel(id, updatedHotelEntity);
-            return ResponseEntity.ok(hotelConverterService.convertToDto(updatedHotel));
-        } catch (RuntimeException e) {
-            logger.error("Ошибка при обновлении отеля с ID: {}", id, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+            @Parameter(description = "Обновленные данные отеля")
+            @Valid @RequestBody HotelDto updatedHotelDto) {
+        Hotel updatedHotelEntity = hotelConverterService.convertToEntity(updatedHotelDto);
+        updatedHotelEntity.setId(id);
+        Hotel updatedHotel = hotelService.updateHotel(id, updatedHotelEntity);
+        return ResponseEntity.ok(hotelConverterService.convertToDto(updatedHotel));
     }
 
+    @Operation(summary = "Удалить отель", description = "Удаляет отель по его ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteHotel(@PathVariable String id) {
-        if (hotelService.getHotelById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Void> deleteHotel(
+            @Parameter(description = "Идентификатор отеля") @PathVariable String id) {
         hotelService.deleteHotel(id);
         return ResponseEntity.noContent().build();
     }

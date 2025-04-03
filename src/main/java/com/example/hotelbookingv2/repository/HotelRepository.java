@@ -13,4 +13,5 @@ public interface HotelRepository extends JpaRepository<Hotel, String> {
 
     List<Hotel> findByCategory(String category);
 
+    boolean existsByNameAndCity(String name, String city);
 }

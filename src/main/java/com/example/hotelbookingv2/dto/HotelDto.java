@@ -1,23 +1,42 @@
 package com.example.hotelbookingv2.dto;
 
+import com.example.hotelbookingv2.validation.FutureOrToday;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
 public class HotelDto {
     private String id;
+
+    @NotBlank(message = "Название отеля не должно быть пустым")
     private String name;
+
+    @NotBlank(message = "Город не должен быть пустым")
     private String city;
+
+    @NotBlank(message = "Категория отеля не должна быть пустой")
+    @Min(value = 1, message = "Категория отеля должна быть не менее 1 звезды")
+    @Max(value = 5, message = "Категория отеля должна быть не более 5 звезд")
     private String category;
+
+    @NotBlank(message = "Дата доступности не должна быть пустой")
+    @FutureOrToday(message = "Дата доступности должна быть сегодняшней или в будущем")
+
     private String availableFromDate;
+
     private List<RoomDto> rooms;
 
-    public HotelDto(
-            String id,
-            String name,
-            String city,
-            String category,
-            String availableFromDate,
-            List<RoomDto> rooms
-    ) {
+    public HotelDto(String id,
+                    String name,
+                    String city,
+                    String category,
+                    String availableFromDate,
+                    List<RoomDto> rooms) {
         this.id = id;
         this.name = name;
         this.city = city;

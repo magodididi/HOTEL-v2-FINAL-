@@ -32,5 +32,10 @@ public class Facility {
     @ManyToMany(mappedBy = "facilities", fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Room> rooms = new ArrayList<>();
+
+    public Facility(String id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
 

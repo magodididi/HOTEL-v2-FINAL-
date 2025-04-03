@@ -42,10 +42,12 @@ public abstract class LfuCacheBase<T> {
     public void put(String id, T value) {
         if (cache.containsKey(id)) {
             Entry<T> entry = cache.get(id);
+
             entry.value = value;
             entry.frequency++;
-            log.info("🔥 LFU Cache: Item updated in cache. ID: {}, "
-                    + "New frequency: {}", id, entry.frequency);
+
+            log.info("🔥 LFU Cache: Item updated in cache. ID: {}, New frequency: {}",
+                    id, entry.frequency);
         } else {
             if (cache.size() >= capacity) {
                 evictLeastFrequentlyUsed();

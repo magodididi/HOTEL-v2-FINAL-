@@ -1,6 +1,8 @@
 package com.example.hotelbookingv2.service.impl;
 
 import com.example.hotelbookingv2.cache.HotelCache;
+import com.example.hotelbookingv2.exception.InvalidInputException;
+import com.example.hotelbookingv2.exception.ResourceNotFoundException;
 import com.example.hotelbookingv2.model.Hotel;
 import com.example.hotelbookingv2.repository.HotelRepository;
 import com.example.hotelbookingv2.service.HotelService;
@@ -17,6 +19,22 @@ public class HotelServiceImpl implements HotelService {
     public HotelServiceImpl(HotelRepository hotelRepository) {
         this.hotelRepository = hotelRepository;
         this.hotelCache = new HotelCache();
+    }
+
+    @Override
+    public List<Hotel> getHotelsByCity(String city) {
+        return hotelRepository.findByCity(city);
+    }
+
+
+    @Override
+    public List<Hotel> getHotelsByCategory(String category) {
+        return hotelRepository.findByCategory(category);
+    }
+
+    @Override
+    public List<Hotel> getAllHotels() {
+        return hotelRepository.findAll();
     }
 
     @Override
@@ -44,12 +62,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     private String generateCacheKey(String city, String category) {
-        return city + ":" + category; // Генерация ключа для кэша
-    }
-
-    @Override
-    public List<Hotel> getHotelsByCity(String city) {
-        return hotelRepository.findByCity(city);
+        return city + ":" + category;
     }
 
     @Override
@@ -59,14 +72,14 @@ public class HotelServiceImpl implements HotelService {
             return Optional.of(cachedHotels.get(0));
         }
 
-        Optional<Hotel> hotelFromDb = hotelRepository.findById(id);
-        hotelFromDb.ifPresent(hotel -> hotelCache.put(id, List.of(hotel))); // Добавляем в кеш
-
-        return hotelFromDb;
+        return hotelRepository.findById(id);
     }
 
     @Override
     public Hotel saveHotel(Hotel hotel) {
+        if (hotel.getName() == null || hotel.getName().isBlank()) {
+            throw new InvalidInputException("Название отеля не должно быть пустым");
+        }
         Hotel savedHotel = hotelRepository.save(hotel);
         hotelCache.put(savedHotel.getId(), List.of(savedHotel));
         return savedHotel;
@@ -74,22 +87,24 @@ public class HotelServiceImpl implements HotelService {
 
     @Override
     public void deleteHotel(String id) {
+        if (!hotelRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Отель с ID " + id + " не найден");
+        }
         hotelRepository.deleteById(id);
         hotelCache.remove(id);
     }
 
     @Override
-    public List<Hotel> getHotelsByCategory(String category) {
-        return hotelRepository.findByCategory(category);
-    }
-
-    @Override
-    public List<Hotel> getAllHotels() {
-        return hotelRepository.findAll();
-    }
-
-    @Override
     public Hotel updateHotel(String id, Hotel updatedHotel) {
+        if (updatedHotel.getName() == null || updatedHotel.getName().isBlank()) {
+            throw new InvalidInputException("Название отеля не должно быть пустым");
+        }
+        if (updatedHotel.getCity() == null || updatedHotel.getCity().isBlank()) {
+            throw new InvalidInputException("Город не должен быть пустым");
+        }
+        if (updatedHotel.getCategory() == null || updatedHotel.getCategory().isBlank()) {
+            throw new InvalidInputException("Категория отеля не должна быть пустой");
+        }
         return hotelRepository.findById(id).map(existingHotel -> {
             existingHotel.setName(updatedHotel.getName());
             existingHotel.setCity(updatedHotel.getCity());
@@ -102,7 +117,6 @@ public class HotelServiceImpl implements HotelService {
             Hotel savedHotel = hotelRepository.save(existingHotel);
             hotelCache.put(id, List.of(savedHotel));
             return savedHotel;
-        }).orElseThrow(() -> new RuntimeException("Hotel not found with id " + id));
+        }).orElseThrow(() -> new ResourceNotFoundException("Отель с ID " + id + " не найден"));
     }
 }
-
