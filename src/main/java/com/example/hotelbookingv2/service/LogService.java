@@ -20,15 +20,15 @@ public class LogService {
 
     private Path createTempFile(LocalDate logDate) {
         try {
-            // Создаём безопасную временную директорию
+            // Создаём временную директорию
             Path tempDir = Files.createTempDirectory("secure-temp-");
 
-            // Если система поддерживает POSIX-атрибуты, ограничиваем доступ (только для владельца)
+            // Проверяем, поддерживаются ли POSIX-атрибуты (Linux/macOS)
             if (Files.getFileStore(tempDir).supportsFileAttributeView("posix")) {
                 Files.setPosixFilePermissions(tempDir, PosixFilePermissions.fromString("rwx------"));
             }
 
-            // Создаём временный файл в этой защищённой директории
+            // Создаём временный файл в безопасной директории
             return Files.createTempFile(tempDir, "log-" + logDate, ".log");
         } catch (IOException e) {
             throw new IllegalStateException("Ошибка создания временного файла: " + e.getMessage());
