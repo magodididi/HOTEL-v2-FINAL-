@@ -18,18 +18,30 @@ import java.nio.file.attribute.PosixFilePermissions;
 @Service
 public class LogService {
 
+    private static final String SECURE_TEMP_DIR = System.getProperty("java.io.tmpdir") + "/secure-logs";
+
     private Path createTempFile(LocalDate logDate) {
         try {
-            // Создаём временную директорию
-            Path tempDir = Files.createTempDirectory("secure-temp-");
+            // Создаём защищённую директорию (если её ещё нет)
+            Path tempDir = Paths.get(SECURE_TEMP_DIR);
+            if (!Files.exists(tempDir)) {
+                Files.createDirectories(tempDir);
 
-            // Проверяем, поддерживаются ли POSIX-атрибуты (Linux/macOS)
-            if (Files.getFileStore(tempDir).supportsFileAttributeView("posix")) {
-                Files.setPosixFilePermissions(tempDir, PosixFilePermissions.fromString("rwx------"));
+                // Ограничиваем права доступа (Linux/macOS)
+                if (Files.getFileStore(tempDir).supportsFileAttributeView("posix")) {
+                    Files.setPosixFilePermissions(tempDir, PosixFilePermissions.fromString("rwx------"));
+                }
             }
 
-            // Создаём временный файл в безопасной директории
-            return Files.createTempFile(tempDir, "log-" + logDate, ".log");
+            // Создаём временный файл внутри защищённого каталога
+            Path tempFile = Files.createTempFile(tempDir, "log-" + logDate + "-", ".log");
+
+            // Ограничиваем права доступа для файла
+            if (Files.getFileStore(tempFile).supportsFileAttributeView("posix")) {
+                Files.setPosixFilePermissions(tempFile, PosixFilePermissions.fromString("rw-------"));
+            }
+
+            return tempFile;
         } catch (IOException e) {
             throw new IllegalStateException("Ошибка создания временного файла: " + e.getMessage());
         }
