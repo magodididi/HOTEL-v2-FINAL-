@@ -13,9 +13,27 @@ import java.time.format.DateTimeParseException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import java.nio.file.attribute.PosixFilePermissions;
 
 @Service
 public class LogService {
+
+    private Path createTempFile(LocalDate logDate) {
+        try {
+            // Создаём безопасную временную директорию
+            Path tempDir = Files.createTempDirectory("secure-temp-");
+
+            // Если система поддерживает POSIX-атрибуты, ограничиваем доступ (только для владельца)
+            if (Files.getFileStore(tempDir).supportsFileAttributeView("posix")) {
+                Files.setPosixFilePermissions(tempDir, PosixFilePermissions.fromString("rwx------"));
+            }
+
+            // Создаём временный файл в этой защищённой директории
+            return Files.createTempFile(tempDir, "log-" + logDate, ".log");
+        } catch (IOException e) {
+            throw new IllegalStateException("Ошибка создания временного файла: " + e.getMessage());
+        }
+    }
 
     private static final String LOG_FILE_PATH = "log/app.log";
 
@@ -48,6 +66,7 @@ public class LogService {
         }
     }
 
+
 //    private Path createTempFile(LocalDate logDate) {
 //        try {
 //            return Files.createTempFile("log-" + logDate, ".log");
@@ -55,15 +74,6 @@ public class LogService {
 //            throw new IllegalStateException("Error creating temp file: " + e.getMessage());
 //        }
 //    }
-
-    private Path createTempFile(LocalDate logDate) {
-        try {
-            Path tempDir = Files.createTempDirectory("secure-temp-");
-            return Files.createTempFile(tempDir, "log-" + logDate, ".log");
-        } catch (IOException e) {
-            throw new IllegalStateException("Error creating temp file: " + e.getMessage());
-        }
-    }
 
     private void filterAndWriteLogsToTempFile(Path logFilePath, String formattedDate,
                                               Path tempFile) {
