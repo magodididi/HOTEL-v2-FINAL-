@@ -79,14 +79,6 @@ public class LogService {
     }
 
 
-//    private Path createTempFile(LocalDate logDate) {
-//        try {
-//            return Files.createTempFile("log-" + logDate, ".log");
-//        } catch (IOException e) {
-//            throw new IllegalStateException("Error creating temp file: " + e.getMessage());
-//        }
-//    }
-
     private void filterAndWriteLogsToTempFile(Path logFilePath, String formattedDate,
                                               Path tempFile) {
         try (BufferedReader reader = Files.newBufferedReader(logFilePath)) {
