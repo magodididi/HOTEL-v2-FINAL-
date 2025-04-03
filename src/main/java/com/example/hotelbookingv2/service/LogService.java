@@ -48,9 +48,18 @@ public class LogService {
         }
     }
 
+//    private Path createTempFile(LocalDate logDate) {
+//        try {
+//            return Files.createTempFile("log-" + logDate, ".log");
+//        } catch (IOException e) {
+//            throw new IllegalStateException("Error creating temp file: " + e.getMessage());
+//        }
+//    }
+
     private Path createTempFile(LocalDate logDate) {
         try {
-            return Files.createTempFile("log-" + logDate, ".log");
+            Path tempDir = Files.createTempDirectory("secure-temp-");
+            return Files.createTempFile(tempDir, "log-" + logDate, ".log");
         } catch (IOException e) {
             throw new IllegalStateException("Error creating temp file: " + e.getMessage());
         }

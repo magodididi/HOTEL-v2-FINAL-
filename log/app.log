@@ -14293,3 +14293,62 @@ Unconditional classes:
 03-04-2025 20:06:26 [DEBUG] - HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
 03-04-2025 20:06:56 [DEBUG] - HikariPool-1 - Pool stats (total=10, active=0, idle=10, waiting=0)
 03-04-2025 20:06:56 [DEBUG] - HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+03-04-2025 21:11:29 [WARN] - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h4m33s95ms).
+03-04-2025 21:11:29 [DEBUG] - HikariPool-1 - Pool stats (total=10, active=0, idle=10, waiting=0)
+03-04-2025 21:11:29 [DEBUG] - HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+03-04-2025 21:11:59 [DEBUG] - HikariPool-1 - Pool stats (total=10, active=0, idle=10, waiting=0)
+03-04-2025 21:11:59 [DEBUG] - HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+03-04-2025 21:12:29 [DEBUG] - HikariPool-1 - Pool stats (total=10, active=0, idle=10, waiting=0)
+03-04-2025 21:12:29 [DEBUG] - HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+03-04-2025 21:12:59 [DEBUG] - HikariPool-1 - Pool stats (total=10, active=0, idle=10, waiting=0)
+03-04-2025 21:12:59 [DEBUG] - HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+03-04-2025 21:13:29 [DEBUG] - HikariPool-1 - Pool stats (total=10, active=0, idle=10, waiting=0)
+03-04-2025 21:13:29 [DEBUG] - HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+03-04-2025 21:13:59 [DEBUG] - HikariPool-1 - Pool stats (total=10, active=0, idle=10, waiting=0)
+03-04-2025 21:13:59 [DEBUG] - HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+03-04-2025 21:14:27 [DEBUG] - RMI Scheduler(0): dfeff335be548f5b:1c63b91:195d85279f4:-7fff
+03-04-2025 21:14:29 [DEBUG] - HikariPool-1 - Pool stats (total=10, active=0, idle=10, waiting=0)
+03-04-2025 21:14:29 [DEBUG] - HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+03-04-2025 21:14:59 [DEBUG] - HikariPool-1 - Pool stats (total=10, active=0, idle=10, waiting=0)
+03-04-2025 21:14:59 [DEBUG] - HikariPool-1 - Fill pool skipped, pool has sufficient level or currently being filled.
+03-04-2025 21:15:28 [DEBUG] - Runtime.exit() called with status: 130
+java.lang.Throwable: Runtime.exit(130)
+	at java.base/java.lang.Shutdown.logRuntimeExit(Shutdown.java:179)
+	at java.base/java.lang.Shutdown.exit(Shutdown.java:160)
+	at java.base/java.lang.Terminator$1.handle(Terminator.java:51)
+	at java.base/jdk.internal.misc.Signal$1.run(Signal.java:218)
+	at java.base/java.lang.Thread.run(Thread.java:1575)
+03-04-2025 21:15:28 [DEBUG] - Application availability state ReadinessState changed from ACCEPTING_TRAFFIC to REFUSING_TRAFFIC
+03-04-2025 21:15:28 [DEBUG] - Closing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@91c4a3f, started on Thu Apr 03 19:51:19 MSK 2025
+03-04-2025 21:15:28 [DEBUG] - Stopping beans in phase 2147482623
+03-04-2025 21:15:28 [INFO] - Commencing graceful shutdown. Waiting for active requests to complete
+03-04-2025 21:15:28 [INFO] - Graceful shutdown complete
+03-04-2025 21:15:28 [DEBUG] - Stopping beans in phase 2147481599
+03-04-2025 21:15:28 [DEBUG] - Bean 'webServerGracefulShutdown' completed its stop procedure
+03-04-2025 21:15:28 [DEBUG] - Bean 'webServerStartStop' completed its stop procedure
+03-04-2025 21:15:28 [DEBUG] - Stopping beans in phase 1073741823
+03-04-2025 21:15:28 [DEBUG] - Bean 'applicationTaskExecutor' completed its stop procedure
+03-04-2025 21:15:28 [DEBUG] - Stopping beans in phase -2147483647
+03-04-2025 21:15:28 [DEBUG] - Bean 'springBootLoggingLifecycle' completed its stop procedure
+03-04-2025 21:15:28 [DEBUG] - Unregistering JMX-exposed beans on shutdown
+03-04-2025 21:15:28 [DEBUG] - Unregistering JMX-exposed beans
+03-04-2025 21:15:28 [DEBUG] - Shutting down ExecutorService 'applicationTaskExecutor'
+03-04-2025 21:15:28 [INFO] - Closing JPA EntityManagerFactory for persistence unit 'default'
+03-04-2025 21:15:28 [DEBUG] - HHH000031: Closing
+03-04-2025 21:15:28 [DEBUG] - Un-scoping TypeConfiguration [org.hibernate.type.spi.TypeConfiguration$Scope@5abb6f28] from SessionFactory [org.hibernate.internal.SessionFactoryImpl@399acce3]
+03-04-2025 21:15:28 [DEBUG] - Implicitly destroying ServiceRegistry on de-registration of all child ServiceRegistries
+03-04-2025 21:15:28 [DEBUG] - Implicitly destroying Boot-strap registry on de-registration of all child ServiceRegistries
+03-04-2025 21:15:28 [INFO] - HikariPool-1 - Shutdown initiated...
+03-04-2025 21:15:28 [DEBUG] - HikariPool-1 - Before shutdown stats (total=10, active=0, idle=10, waiting=0)
+03-04-2025 21:15:28 [DEBUG] - HikariPool-1 - Closing connection org.postgresql.jdbc.PgConnection@20be793a: (connection evicted)
+03-04-2025 21:15:28 [DEBUG] - HikariPool-1 - Closing connection org.postgresql.jdbc.PgConnection@37e571eb: (connection evicted)
+03-04-2025 21:15:28 [DEBUG] - HikariPool-1 - Closing connection org.postgresql.jdbc.PgConnection@76d87bd0: (connection evicted)
+03-04-2025 21:15:28 [DEBUG] - HikariPool-1 - Closing connection org.postgresql.jdbc.PgConnection@47e4aa64: (connection evicted)
+03-04-2025 21:15:28 [DEBUG] - HikariPool-1 - Closing connection org.postgresql.jdbc.PgConnection@16f7849f: (connection evicted)
+03-04-2025 21:15:28 [DEBUG] - HikariPool-1 - Closing connection org.postgresql.jdbc.PgConnection@38eae67e: (connection evicted)
+03-04-2025 21:15:28 [DEBUG] - HikariPool-1 - Closing connection org.postgresql.jdbc.PgConnection@12b97ec9: (connection evicted)
+03-04-2025 21:15:28 [DEBUG] - HikariPool-1 - Closing connection org.postgresql.jdbc.PgConnection@5992f40d: (connection evicted)
+03-04-2025 21:15:28 [DEBUG] - HikariPool-1 - Closing connection org.postgresql.jdbc.PgConnection@3ecbbdcf: (connection evicted)
+03-04-2025 21:15:28 [DEBUG] - HikariPool-1 - Closing connection org.postgresql.jdbc.PgConnection@67e9ed31: (connection evicted)
+03-04-2025 21:15:28 [DEBUG] - HikariPool-1 - After shutdown stats (total=0, active=0, idle=0, waiting=0)
+03-04-2025 21:15:28 [INFO] - HikariPool-1 - Shutdown completed.
