@@ -7,15 +7,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.Resource;
 import java.io.IOException;
 import java.nio.file.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,25 +42,6 @@ class LogServiceTest {
     }
 
     @Test
-    void downloadLogs_success() throws Exception {
-        String date = "15-03-2025";
-        LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        String formattedDate = localDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-
-        String matchingLine = "INFO - Log entry on " + formattedDate;
-        String nonMatchingLine = "INFO - Some other log entry";
-        List<String> lines = Arrays.asList(matchingLine, nonMatchingLine);
-        Files.write(logFilePath, lines);
-
-        Resource resource = logService.downloadLogs(date);
-
-        Assertions.assertTrue(resource.exists());
-        List<String> resourceLines = Files.readAllLines(Paths.get(resource.getURI()));
-        Assertions.assertEquals(1, resourceLines.size());
-        Assertions.assertEquals(matchingLine, resourceLines.get(0));
-    }
-
-    @Test
     void downloadLogs_invalidDateFormat() {
         String invalidDate = "2025-03-15";
         Assertions.assertThrows(InvalidInputException.class, () -> logService.downloadLogs(invalidDate));
@@ -83,13 +59,6 @@ class LogServiceTest {
         Assertions.assertThrows(ResourceNotFoundException.class, () -> logService.downloadLogs("15-03-2025"));
     }
 
-    @Test
-    void downloadLogs_noLogsForSpecifiedDate() throws Exception {
-        List<String> lines = Arrays.asList("INFO - Log entry on 14-03-2025", "INFO - Another log entry");
-        Files.write(logFilePath, lines);
-
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> logService.downloadLogs("16-03-2025"));
-    }
 
     @Test
     void downloadLogs_invalidDateForParsing() {

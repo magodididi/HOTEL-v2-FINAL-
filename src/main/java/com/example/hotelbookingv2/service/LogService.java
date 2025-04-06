@@ -8,10 +8,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.PosixFilePermission;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -71,11 +74,24 @@ public class LogService {
 
     private Path createTempFile(LocalDate logDate) {
         try {
-            return Files.createTempFile("log-" + logDate, ".log");
+            // Create a secure directory for storing log files with controlled permissions
+            Path tempDir = Files.createTempDirectory("logFiles-" + logDate);
+
+            // Set restrictive permissions so only the current user can read/write
+            Files.setPosixFilePermissions(tempDir, Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE));
+
+            // Create a temporary log file with secure permissions inside the directory
+            Path tempFile = Files.createTempFile(tempDir, "log-" + logDate, ".log");
+
+            // Set restrictive permissions for the log file as well
+            Files.setPosixFilePermissions(tempFile, Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE));
+
+            return tempFile;
         } catch (IOException e) {
-            throw new IllegalStateException("Error creating temp file: " + e.getMessage());
+            throw new IllegalStateException("Error creating temp file: " + e.getMessage(), e);
         }
     }
+
 
     private void filterAndWriteLogsToTempFile(Path logFilePath, String formattedDate,
                                               Path tempFile) {
