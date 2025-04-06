@@ -8,7 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -71,26 +73,28 @@ public class LogService {
         }
     }
 
-
     private Path createTempFile(LocalDate logDate) {
         try {
-            // Create a secure directory for storing log files with controlled permissions
-            Path tempDir = Files.createTempDirectory("logFiles-" + logDate);
+            // Define a secure directory where temporary files will be created
+            Path secureDir = Paths.get("/Users/margarita/IdeaProjects/hotelbooking-v2/log");
+            if (!Files.exists(secureDir)) {
+                Files.createDirectories(secureDir);
+            }
 
-            // Set restrictive permissions so only the current user can read/write
-            Files.setPosixFilePermissions(tempDir, Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE));
+            // Set restrictive permissions for the directory (read/write only for owner)
+            Files.setPosixFilePermissions(secureDir, Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE));
 
-            // Create a temporary log file with secure permissions inside the directory
-            Path tempFile = Files.createTempFile(tempDir, "log-" + logDate, ".log");
+            // Create a secure temporary file within the dedicated sub-folder
+            FileAttribute<Set<PosixFilePermission>> filePermissions = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------"));
+            Path tempFile = Files.createTempFile(secureDir, "log-" + logDate, ".log", filePermissions);
 
-            // Set restrictive permissions for the log file as well
-            Files.setPosixFilePermissions(tempFile, Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE));
-
+            // File is automatically unmodifiable and restricted to the creating user
             return tempFile;
         } catch (IOException e) {
-            throw new IllegalStateException("Error creating temp file: " + e.getMessage(), e);
+            throw new IllegalStateException("Error creating secure temp file: " + e.getMessage(), e);
         }
     }
+
 
 
     private void filterAndWriteLogsToTempFile(Path logFilePath, String formattedDate,
