@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -107,13 +106,13 @@ public class RoomRestController {
                     room.setId(UUID.randomUUID().toString()); // вручную задаём ID
                     return room;
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         List<Room> savedRooms = roomService.saveRoomsBulk(rooms);
 
         List<RoomDto> resultDtos = savedRooms.stream()
                 .map(roomMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(resultDtos);
     }

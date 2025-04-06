@@ -1,7 +1,6 @@
 package com.example.hotelbookingv2.controller;
 
 import com.example.hotelbookingv2.dto.HotelDto;
-import com.example.hotelbookingv2.exception.ResourceNotFoundException;
 import com.example.hotelbookingv2.mapper.HotelMapper;
 import com.example.hotelbookingv2.model.Hotel;
 import com.example.hotelbookingv2.service.HotelService;

@@ -147,7 +147,6 @@ class HotelServiceTest {
     @Test
     void deleteHotel_success() {
         String hotelId = "1";
-        Hotel hotel = new Hotel(hotelId, "Hotel A", "New York", "Luxury", "2023-12-01");
 
         Mockito.when(hotelRepository.existsById(hotelId)).thenReturn(true);
         Mockito.doNothing().when(hotelRepository).deleteById(hotelId);

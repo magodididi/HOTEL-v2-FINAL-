@@ -6,7 +6,6 @@ import com.example.hotelbookingv2.exception.ResourceNotFoundException;
 import com.example.hotelbookingv2.model.Hotel;
 import com.example.hotelbookingv2.repository.HotelRepository;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
