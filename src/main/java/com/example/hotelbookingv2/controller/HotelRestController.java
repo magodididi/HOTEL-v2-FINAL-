@@ -2,8 +2,8 @@ package com.example.hotelbookingv2.controller;
 
 import com.example.hotelbookingv2.dto.HotelDto;
 import com.example.hotelbookingv2.exception.ResourceNotFoundException;
+import com.example.hotelbookingv2.mapper.HotelMapper;
 import com.example.hotelbookingv2.model.Hotel;
-import com.example.hotelbookingv2.service.HotelConverterService;
 import com.example.hotelbookingv2.service.HotelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HotelRestController {
 
     private final HotelService hotelService;
-    private final HotelConverterService hotelConverterService;
+    private final HotelMapper hotelMapper;
 
     @Operation(summary = "Получить список отелей",
             description = "Позволяет получить список отелей с фильтрацией по городу и категории")
@@ -42,30 +42,29 @@ public class HotelRestController {
             @RequestParam(required = false) String category) {
         List<Hotel> hotels = hotelService.getHotels(city, category);
         List<HotelDto> hotelDtos = hotels.stream()
-                .map(hotelConverterService::convertToDto)
+                .map(hotelMapper::convertToDto)
                 .toList();
         return ResponseEntity.ok(hotelDtos);
     }
 
-    @Operation(summary = "Получить отель по ID",
-            description = "Возвращает информацию об отеле по его уникальному идентификатору")
     @GetMapping("/{id}")
     public ResponseEntity<HotelDto> getHotelById(
             @Parameter(description = "Идентификатор отеля") @PathVariable String id) {
-        return hotelService.getHotelById(id)
-                .map(hotel -> ResponseEntity.ok(hotelConverterService.convertToDto(hotel)))
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Отель с ID " + id + " не найден"));
+
+        Hotel hotel = hotelService.getHotelById(id); // уже Hotel, не Optional
+        HotelDto dto = hotelMapper.convertToDto(hotel);
+        return ResponseEntity.ok(dto);
     }
+
 
     @Operation(summary = "Создать новый отель", description = "Создает и возвращает новый отель")
     @PostMapping
     public ResponseEntity<HotelDto> createHotel(
             @Parameter(description = "Данные нового отеля") @Valid @RequestBody HotelDto hotelDto) {
-        Hotel hotel = hotelConverterService.convertToEntity(hotelDto);
+        Hotel hotel = hotelMapper.convertToEntity(hotelDto);
         Hotel createdHotel = hotelService.saveHotel(hotel);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(hotelConverterService.convertToDto(createdHotel));
+                .body(hotelMapper.convertToDto(createdHotel));
     }
 
     @Operation(summary = "Обновить информацию об отеле",
@@ -76,10 +75,10 @@ public class HotelRestController {
             @PathVariable String id,
             @Parameter(description = "Обновленные данные отеля")
             @Valid @RequestBody HotelDto updatedHotelDto) {
-        Hotel updatedHotelEntity = hotelConverterService.convertToEntity(updatedHotelDto);
+        Hotel updatedHotelEntity = hotelMapper.convertToEntity(updatedHotelDto);
         updatedHotelEntity.setId(id);
         Hotel updatedHotel = hotelService.updateHotel(id, updatedHotelEntity);
-        return ResponseEntity.ok(hotelConverterService.convertToDto(updatedHotel));
+        return ResponseEntity.ok(hotelMapper.convertToDto(updatedHotel));
     }
 
     @Operation(summary = "Удалить отель", description = "Удаляет отель по его ID")

@@ -60,7 +60,7 @@ public class FacilityController {
             description = "Создает новое удобство и возвращает его данные"
     )
     @PostMapping
-    public ResponseEntity<FacilityDto> createFacility(@Valid @RequestBody FacilityDto facilityDto) {
+    public ResponseEntity<FacilityDto> createFacility(@RequestBody FacilityDto facilityDto) {
         FacilityDto savedFacility = facilityService.createFacility(facilityDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedFacility);
     }
@@ -93,5 +93,4 @@ public class FacilityController {
         facilityService.deleteFacility(facilityId);
         return ResponseEntity.noContent().build();
     }
-
 }

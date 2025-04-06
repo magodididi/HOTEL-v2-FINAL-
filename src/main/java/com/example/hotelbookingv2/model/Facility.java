@@ -4,11 +4,14 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +27,7 @@ import lombok.Setter;
 public class Facility {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id = UUID.randomUUID().toString();
 
     @Column(nullable = false, unique = true)
@@ -37,5 +41,23 @@ public class Facility {
         this.id = id;
         this.name = name;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Facility facility = (Facility) o;
+        return Objects.equals(id, facility.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }
 

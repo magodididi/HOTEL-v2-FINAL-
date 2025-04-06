@@ -40,5 +40,63 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Room> rooms = new ArrayList<>();
+
+    // Конструктор для инициализации всех полей
+    public Hotel(String id, String name, String city, String category, String availableFromDate) {
+        this.id = id;
+        this.name = name;
+        this.city = city;
+        this.category = category;
+        this.availableFromDate = availableFromDate;
+    }
+
+    // Геттеры и сеттеры (можно использовать Lombok для их генерации)
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getAvailableFromDate() {
+        return availableFromDate;
+    }
+
+    public void setAvailableFromDate(String availableFromDate) {
+        this.availableFromDate = availableFromDate;
+    }
+
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(List<Room> rooms) {
+        this.rooms = rooms;
+    }
 }
 

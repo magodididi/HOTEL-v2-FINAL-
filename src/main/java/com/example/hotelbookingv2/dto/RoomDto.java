@@ -47,13 +47,4 @@ public class RoomDto {
         this.facilities = facilities;
     }
 
-    public RoomDto(String roomNumber, String type, Double price, String hotelId) {
-        this.id = UUID.randomUUID().toString();
-        this.roomNumber = roomNumber;
-        this.type = type;
-        this.price = price;
-        this.hotelId = hotelId;
-    }
-
-
 }

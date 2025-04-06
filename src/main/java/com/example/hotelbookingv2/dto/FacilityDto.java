@@ -26,6 +26,8 @@ public class FacilityDto {
     }
 
 
+
+
     public String getId() {
         return id;
     }

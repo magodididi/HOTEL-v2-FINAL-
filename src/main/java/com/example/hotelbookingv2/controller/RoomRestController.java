@@ -1,17 +1,16 @@
 package com.example.hotelbookingv2.controller;
 
-import com.example.hotelbookingv2.dto.FacilityDto;
 import com.example.hotelbookingv2.dto.RoomDto;
-import com.example.hotelbookingv2.model.Facility;
+import com.example.hotelbookingv2.mapper.RoomMapper;
 import com.example.hotelbookingv2.model.Room;
 import com.example.hotelbookingv2.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,10 +27,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Комнаты", description = "API для управления номерами в отелях") // Описание контроллера
 @RestController
 @RequestMapping("/rooms")
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
+
 public class RoomRestController {
 
     private final RoomService roomService;
+    private final RoomMapper roomMapper;
+
+    public RoomRestController(RoomService roomService, RoomMapper roomMapper) {
+        this.roomService = roomService;
+        this.roomMapper = roomMapper;
+    }
 
     @Operation(summary = "Получить номера отеля",
             description = "Возвращает список номеров по ID отеля")
@@ -72,9 +78,11 @@ public class RoomRestController {
     @Operation(summary = "Создать номер", description = "Создает новый номер в отеле")
     @PostMapping
     public ResponseEntity<RoomDto> createRoom(@Valid @RequestBody RoomDto roomDto) {
-        Room room = roomService.saveRoom(mapToEntity(roomDto));
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapToDto(room));
+        Room room = roomMapper.toEntity(roomDto);
+        Room saved = roomService.saveRoom(room);
+        return ResponseEntity.status(HttpStatus.CREATED).body(roomMapper.toDto(saved));
     }
+
 
     @Operation(summary = "Обновить номер", description = "Обновляет информацию о номере по его ID")
     @PutMapping("/{id}")
@@ -82,34 +90,34 @@ public class RoomRestController {
             @PathVariable String id,
             @Valid @RequestBody RoomDto updatedRoomDto
     ) {
-        Room updatedRoom = roomService.updateRoom(id, mapToEntity(updatedRoomDto));
-        return ResponseEntity.ok(mapToDto(updatedRoom));
+        Room updatedRoom = roomService.updateRoom(id, roomMapper.toEntity(updatedRoomDto));
+        return ResponseEntity.ok(roomMapper.toDto(updatedRoom));
     }
 
-    private Room mapToEntity(RoomDto dto) {
-        Room room = new Room();
-        room.setRoomNumber(dto.getRoomNumber());
-        room.setType(dto.getType());
-        room.setPrice(dto.getPrice());
 
-        if (dto.getFacilities() != null) {
-            List<Facility> facilities = dto.getFacilities().stream()
-                    .map(facilityDto -> new Facility(facilityDto.getId(), facilityDto.getName()))
-                    .toList();
-            room.setFacilities(new ArrayList<>(facilities));
-        }
-        return room;
+    @Operation(summary = "Массовое создание комнат", description = "Создает"
+            + " несколько комнат одним запросом")
+    @PostMapping("/bulk")
+    public ResponseEntity<List<RoomDto>> createRoomsBulk(
+            @Valid @RequestBody List<RoomDto> roomDtos) {
+
+        List<Room> rooms = roomDtos.stream()
+                .map(roomDto -> {
+                    Room room = roomMapper.toEntity(roomDto);
+                    room.setId(UUID.randomUUID().toString()); // вручную задаём ID
+                    return room;
+                })
+                .collect(Collectors.toList());
+
+        List<Room> savedRooms = roomService.saveRoomsBulk(rooms);
+
+        List<RoomDto> resultDtos = savedRooms.stream()
+                .map(roomMapper::toDto)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(resultDtos);
     }
 
-    private RoomDto mapToDto(Room room) {
-        return new RoomDto(
-                room.getId(),
-                room.getRoomNumber(),
-                room.getType(),
-                room.getPrice(),
-                room.getHotel().getId(),
-                room.getFacilities().stream().map(
-                        f -> new FacilityDto(f.getId(), f.getName())).toList());
-    }
+
 
 }

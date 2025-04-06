@@ -7,47 +7,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import java.nio.file.attribute.PosixFilePermissions;
 
 @Service
 public class LogService {
 
-    private static final String SECURE_TEMP_DIR = System.getProperty("java.io.tmpdir") + "/secure-logs";
-
-    private Path createTempFile(LocalDate logDate) {
-        try {
-            // Создаём защищённую директорию (если её ещё нет)
-            Path tempDir = Paths.get(SECURE_TEMP_DIR);
-            if (!Files.exists(tempDir)) {
-                Files.createDirectories(tempDir);
-
-                // Ограничиваем права доступа (Linux/macOS)
-                if (Files.getFileStore(tempDir).supportsFileAttributeView("posix")) {
-                    Files.setPosixFilePermissions(tempDir, PosixFilePermissions.fromString("rwx------"));
-                }
-            }
-
-            // Создаём временный файл внутри защищённого каталога
-            Path tempFile = Files.createTempFile(tempDir, "log-" + logDate + "-", ".log");
-
-            // Ограничиваем права доступа для файла
-            if (Files.getFileStore(tempFile).supportsFileAttributeView("posix")) {
-                Files.setPosixFilePermissions(tempFile, PosixFilePermissions.fromString("rw-------"));
-            }
-
-            return tempFile;
-        } catch (IOException e) {
-            throw new IllegalStateException("Ошибка создания временного файла: " + e.getMessage());
-        }
-    }
-
     private static final String LOG_FILE_PATH = "log/app.log";
+    private static final int MAX_LOG_LINES = 10_000;
 
     public Resource downloadLogs(String date) {
         LocalDate logDate = parseDate(date);
@@ -55,12 +28,29 @@ public class LogService {
         Path logFilePath = Paths.get(LOG_FILE_PATH);
         validateLogFileExists(logFilePath);
 
+        truncateLogFileIfNecessary(logFilePath); // <-- добавлено
+
         String formattedDate = logDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
         Path tempFile = createTempFile(logDate);
         filterAndWriteLogsToTempFile(logFilePath, formattedDate, tempFile);
 
         return createResourceFromTempFile(tempFile, date);
+    }
+
+
+    private void truncateLogFileIfNecessary(Path logFilePath) {
+        try {
+            List<String> allLines = Files.readAllLines(logFilePath);
+            int totalLines = allLines.size();
+            if (totalLines > MAX_LOG_LINES) {
+                // Оставим только последние 10_000 строк
+                List<String> lastLines = allLines.subList(totalLines - MAX_LOG_LINES, totalLines);
+                Files.write(logFilePath, lastLines, StandardOpenOption.TRUNCATE_EXISTING);
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Ошибка при очистке логов: " + e.getMessage());
+        }
     }
 
     private LocalDate parseDate(String date) {
@@ -78,6 +68,14 @@ public class LogService {
         }
     }
 
+
+    private Path createTempFile(LocalDate logDate) {
+        try {
+            return Files.createTempFile("log-" + logDate, ".log");
+        } catch (IOException e) {
+            throw new IllegalStateException("Error creating temp file: " + e.getMessage());
+        }
+    }
 
     private void filterAndWriteLogsToTempFile(Path logFilePath, String formattedDate,
                                               Path tempFile) {

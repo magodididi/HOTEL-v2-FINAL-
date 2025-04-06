@@ -138,9 +138,5 @@ public class FacilityService {
 
         facilityRepository.delete(facility);
     }
-
-
-
-
 }
 
