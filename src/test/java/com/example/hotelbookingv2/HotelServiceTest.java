@@ -6,164 +6,193 @@ import com.example.hotelbookingv2.cache.HotelCache;
 import com.example.hotelbookingv2.exception.InvalidInputException;
 import com.example.hotelbookingv2.exception.ResourceNotFoundException;
 import com.example.hotelbookingv2.service.HotelService;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Arrays;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 class HotelServiceTest {
 
-    @InjectMocks
-    private HotelService hotelService;
+    @Mock private HotelRepository hotelRepository;
+    @Mock private HotelCache hotelCache;
+    @InjectMocks private HotelService hotelService;
 
-    @Mock
-    private HotelRepository hotelRepository;
+    private Hotel sampleHotel;
 
-    @Mock
-    private HotelCache hotelCache;
-
-    @Test
-    void getHotels_success() {
-        String city = "New York";
-        String category = "Luxury";
-
-        Hotel hotel1 = new Hotel("1", "Hotel A", city, category, "2023-12-01");
-        Hotel hotel2 = new Hotel("2", "Hotel B", city, category, "2023-12-01");
-        List<Hotel> hotels = Arrays.asList(hotel1, hotel2);
-
-        String cacheKey = city + ":" + category;
-        Mockito.when(hotelCache.get(cacheKey)).thenReturn(null);
-        Mockito.when(hotelRepository.findByCityAndCategory(city, category)).thenReturn(hotels);
-        Mockito.doNothing().when(hotelCache).put(cacheKey, hotels);
-
-        List<Hotel> result = hotelService.getHotels(city, category);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals(2, result.size());
-        Mockito.verify(hotelRepository).findByCityAndCategory(city, category);
-        Mockito.verify(hotelCache).put(cacheKey, hotels);
+    @BeforeEach
+    void setUp() {
+        sampleHotel = new Hotel();
+        sampleHotel.setId("hotel-1");
+        sampleHotel.setName("Sample Hotel");
+        sampleHotel.setCity("Paris");
+        sampleHotel.setCategory("Luxury");
+        sampleHotel.setAvailableFromDate(LocalDate.now().toString());
     }
 
     @Test
     void getHotels_fromCache() {
-        String city = "New York";
-        String category = "Luxury";
-        Hotel hotel = new Hotel("1", "Hotel A", city, category, "2023-12-01");
-        List<Hotel> hotels = Arrays.asList(hotel);
+        String key = "Paris:Luxury";
+        when(hotelCache.get(key)).thenReturn(List.of(sampleHotel));
 
-        String cacheKey = city + ":" + category;
-        Mockito.when(hotelCache.get(cacheKey)).thenReturn(hotels);
+        List<Hotel> result = hotelService.getHotels("Paris", "Luxury");
 
-        List<Hotel> result = hotelService.getHotels(city, category);
-
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals("Hotel A", result.get(0).getName());
-        Mockito.verify(hotelRepository, Mockito.never()).findByCityAndCategory(Mockito.anyString(), Mockito.anyString());
+        assertEquals(1, result.size());
+        verify(hotelRepository, never()).findByCityAndCategory(any(), any());
     }
 
     @Test
-    void getHotelById_success() {
-        String hotelId = "1";
-        Hotel hotel = new Hotel(hotelId, "Hotel A", "New York", "Luxury", "2023-12-01");
+    void getHotels_byCityAndCategory() {
+        when(hotelCache.get("Paris:Luxury")).thenReturn(null);
+        when(hotelRepository.findByCityAndCategory("Paris", "Luxury"))
+                .thenReturn(List.of(sampleHotel));
 
-        Mockito.when(hotelCache.get(hotelId)).thenReturn(Arrays.asList(hotel));
+        List<Hotel> result = hotelService.getHotels("Paris", "Luxury");
 
-        Hotel result = hotelService.getHotelById(hotelId); // ✔️ просто Hotel
-
-        Assertions.assertEquals(hotelId, result.getId());
-        Mockito.verify(hotelCache).get(hotelId);
-        Mockito.verify(hotelRepository, Mockito.never()).findById(hotelId);
+        assertEquals(List.of(sampleHotel), result);
+        verify(hotelCache).put("Paris:Luxury", List.of(sampleHotel));
     }
 
+    @Test
+    void getHotels_byCityOnly() {
+        when(hotelCache.get("Paris:null")).thenReturn(null);
+        when(hotelRepository.findByCity("Paris")).thenReturn(List.of(sampleHotel));
+
+        List<Hotel> result = hotelService.getHotels("Paris", null);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getHotels_byCategoryOnly() {
+        when(hotelCache.get("null:Luxury")).thenReturn(null);
+        when(hotelRepository.findByCategory("Luxury")).thenReturn(List.of(sampleHotel));
+
+        List<Hotel> result = hotelService.getHotels(null, "Luxury");
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getHotels_all() {
+        when(hotelCache.get("null:null")).thenReturn(null);
+        when(hotelRepository.findAll()).thenReturn(List.of(sampleHotel));
+
+        List<Hotel> result = hotelService.getHotels(null, null);
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getHotelById_fromCache() {
+        when(hotelCache.get("hotel-1")).thenReturn(List.of(sampleHotel));
+
+        Hotel result = hotelService.getHotelById("hotel-1");
+
+        assertEquals(sampleHotel, result);
+        verify(hotelRepository, never()).findById(any());
+    }
+
+    @Test
+    void getHotelById_fromRepo() {
+        when(hotelCache.get("hotel-1")).thenReturn(null);
+        when(hotelRepository.findById("hotel-1")).thenReturn(Optional.of(sampleHotel));
+
+        Hotel result = hotelService.getHotelById("hotel-1");
+
+        assertEquals(sampleHotel, result);
+    }
 
     @Test
     void getHotelById_notFound() {
-        String hotelId = "1";
+        when(hotelCache.get("hotel-1")).thenReturn(null);
+        when(hotelRepository.findById("hotel-1")).thenReturn(Optional.empty());
 
-        Mockito.when(hotelCache.get(hotelId)).thenReturn(null);
-        Mockito.when(hotelRepository.findById(hotelId)).thenReturn(Optional.empty());
-
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> hotelService.getHotelById(hotelId));
+        assertThrows(ResourceNotFoundException.class,
+                () -> hotelService.getHotelById("hotel-1"));
     }
 
     @Test
     void saveHotel_success() {
-        Hotel hotel = new Hotel("1", "Hotel A", "New York", "Luxury", "2023-12-01");
+        when(hotelRepository.save(sampleHotel)).thenReturn(sampleHotel);
 
-        Mockito.when(hotelRepository.save(hotel)).thenReturn(hotel);
-        Mockito.doNothing().when(hotelCache).put(hotel.getId(), List.of(hotel));
+        Hotel result = hotelService.saveHotel(sampleHotel);
 
-        Hotel result = hotelService.saveHotel(hotel);
-
-        Assertions.assertNotNull(result);
-        Assertions.assertEquals("Hotel A", result.getName());
-        Mockito.verify(hotelRepository).save(hotel);
-        Mockito.verify(hotelCache).put(hotel.getId(), List.of(hotel));
+        assertEquals(sampleHotel, result);
+        verify(hotelCache).put("hotel-1", List.of(sampleHotel));
     }
 
     @Test
     void saveHotel_invalidName() {
-        Hotel hotel = new Hotel("1", "", "New York", "Luxury", "2023-12-01");
+        sampleHotel.setName(" ");
 
-        Assertions.assertThrows(InvalidInputException.class, () -> hotelService.saveHotel(hotel));
-    }
-
-    @Test
-    void updateHotel_success() {
-        String hotelId = "1";
-        Hotel updatedHotel = new Hotel(hotelId, "Hotel A Updated", "New York", "Luxury", "2023-12-01");
-
-        Hotel existingHotel = new Hotel(hotelId, "Hotel A", "New York", "Luxury", "2023-12-01");
-        Mockito.when(hotelRepository.findById(hotelId)).thenReturn(Optional.of(existingHotel));
-        Mockito.when(hotelRepository.save(existingHotel)).thenReturn(updatedHotel);
-        Mockito.doNothing().when(hotelCache).put(hotelId, List.of(updatedHotel));
-
-        Hotel result = hotelService.updateHotel(hotelId, updatedHotel);
-
-        Assertions.assertEquals("Hotel A Updated", result.getName());
-        Mockito.verify(hotelRepository).findById(hotelId);
-        Mockito.verify(hotelRepository).save(existingHotel);
-        Mockito.verify(hotelCache).put(hotelId, List.of(updatedHotel));
-    }
-
-    @Test
-    void updateHotel_notFound() {
-        String hotelId = "1";
-        Hotel updatedHotel = new Hotel(hotelId, "Hotel A Updated", "New York", "Luxury", "2023-12-01");
-
-        Mockito.when(hotelRepository.findById(hotelId)).thenReturn(Optional.empty());
-
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> hotelService.updateHotel(hotelId, updatedHotel));
+        assertThrows(InvalidInputException.class,
+                () -> hotelService.saveHotel(sampleHotel));
     }
 
     @Test
     void deleteHotel_success() {
-        String hotelId = "1";
+        when(hotelRepository.existsById("hotel-1")).thenReturn(true);
 
-        Mockito.when(hotelRepository.existsById(hotelId)).thenReturn(true);
-        Mockito.doNothing().when(hotelRepository).deleteById(hotelId);
-        Mockito.doNothing().when(hotelCache).remove(hotelId);
+        hotelService.deleteHotel("hotel-1");
 
-        hotelService.deleteHotel(hotelId);
-
-        Mockito.verify(hotelRepository).deleteById(hotelId);
-        Mockito.verify(hotelCache).remove(hotelId);
+        verify(hotelRepository).deleteById("hotel-1");
+        verify(hotelCache).remove("hotel-1");
     }
 
     @Test
     void deleteHotel_notFound() {
-        String hotelId = "1";
+        when(hotelRepository.existsById("hotel-1")).thenReturn(false);
 
-        Mockito.when(hotelRepository.existsById(hotelId)).thenReturn(false);
+        assertThrows(ResourceNotFoundException.class,
+                () -> hotelService.deleteHotel("hotel-1"));
+    }
 
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> hotelService.deleteHotel(hotelId));
+    @Test
+    void updateHotel_success() {
+        Hotel updated = new Hotel();
+        updated.setName("Updated Hotel");
+        updated.setCity("London");
+        updated.setCategory("Business");
+        updated.setAvailableFromDate(LocalDate.now().toString());
+        updated.setRooms(List.of());  // можно с комнатами, если нужно
+
+        when(hotelRepository.findById("hotel-1")).thenReturn(Optional.of(sampleHotel));
+        when(hotelRepository.save(any(Hotel.class))).thenReturn(updated);
+
+        Hotel result = hotelService.updateHotel("hotel-1", updated);
+
+        assertEquals("Updated Hotel", result.getName());
+        verify(hotelCache).put("hotel-1", List.of(updated));
+    }
+
+    @Test
+    void updateHotel_missingName() {
+        Hotel updated = new Hotel();
+        updated.setName(" ");
+        updated.setCity("City");
+        updated.setCategory("Category");
+
+        assertThrows(InvalidInputException.class,
+                () -> hotelService.updateHotel("hotel-1", updated));
+    }
+
+    @Test
+    void updateHotel_notFound() {
+        when(hotelRepository.findById("hotel-1")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> hotelService.updateHotel("hotel-1", sampleHotel));
     }
 }
