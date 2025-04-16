@@ -58,3 +58,58 @@
 17-04-2025 00:07:00 [INFO] - Closing JPA EntityManagerFactory for persistence unit 'default'
 17-04-2025 00:07:00 [INFO] - HikariPool-1 - Shutdown initiated...
 17-04-2025 00:07:00 [INFO] - HikariPool-1 - Shutdown completed.
+17-04-2025 00:24:18 [INFO] - Starting HotelbookingV2Application using Java 23.0.2 with PID 27666 (/Users/margarita/IdeaProjects/hotelbooking-v2/target/classes started by margarita in /Users/margarita/IdeaProjects/hotelbooking-v2)
+17-04-2025 00:24:18 [DEBUG] - Running with Spring Boot v3.4.2, Spring v6.2.2
+17-04-2025 00:24:18 [INFO] - No active profile set, falling back to 1 default profile: "default"
+17-04-2025 00:24:18 [INFO] - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+17-04-2025 00:24:18 [INFO] - Finished Spring Data repository scanning in 19 ms. Found 3 JPA repository interfaces.
+17-04-2025 00:24:19 [INFO] - Tomcat initialized with port 8080 (http)
+17-04-2025 00:24:19 [INFO] - Starting service [Tomcat]
+17-04-2025 00:24:19 [INFO] - Starting Servlet engine: [Apache Tomcat/10.1.35]
+17-04-2025 00:24:19 [INFO] - Initializing Spring embedded WebApplicationContext
+17-04-2025 00:24:19 [INFO] - Root WebApplicationContext: initialization completed in 943 ms
+17-04-2025 00:24:19 [INFO] - HHH000204: Processing PersistenceUnitInfo [name: default]
+17-04-2025 00:24:19 [INFO] - HHH000412: Hibernate ORM core version 6.6.5.Final
+17-04-2025 00:24:19 [INFO] - HHH000026: Second-level cache disabled
+17-04-2025 00:24:19 [INFO] - No LoadTimeWeaver setup: ignoring JPA class transformer
+17-04-2025 00:24:19 [INFO] - HikariPool-1 - Starting...
+17-04-2025 00:24:19 [INFO] - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@77e6761f
+17-04-2025 00:24:19 [INFO] - HikariPool-1 - Start completed.
+17-04-2025 00:24:19 [INFO] - HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 14.17
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+17-04-2025 00:24:20 [INFO] - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+17-04-2025 00:24:20 [INFO] - Initialized JPA EntityManagerFactory for persistence unit 'default'
+17-04-2025 00:24:21 [INFO] - Hibernate is in classpath; If applicable, HQL parser will be used.
+17-04-2025 00:24:21 [INFO] - Executing: AsyncConfig.executor()
+17-04-2025 00:24:21 [INFO] - Executing: AsyncConfig.executor() with result: org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor@271bbb75
+17-04-2025 00:24:21 [INFO] - Executing: OpenApiConfig.customOpenApi()
+17-04-2025 00:24:21 [INFO] - Executing: OpenApiConfig.customOpenApi() with result: class OpenAPI {
+    openapi: 3.0.1
+    info: class Info {
+        title: Hotel Booking API
+        description: API documentation for Hotel Booking API
+        summary: null
+        termsOfService: null
+        contact: null
+        license: null
+        version: 1.0
+    }
+    externalDocs: class ExternalDocumentation {
+        description: GitHub repository
+        url: https://github.com/magodididi/HOTEL-v2-FINAL-.git
+    }
+    servers: null
+    security: null
+    tags: null
+    paths: null
+    components: null
+}
+17-04-2025 00:24:21 [WARN] - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+17-04-2025 00:24:22 [INFO] - Tomcat started on port 8080 (http) with context path '/'
+17-04-2025 00:24:22 [INFO] - Started HotelbookingV2Application in 3.915 seconds (process running for 4.322)
