@@ -1,6 +1,5 @@
 package com.example.hotelbookingv2.service;
 
-import com.example.hotelbookingv2.cache.RoomCache;
 import com.example.hotelbookingv2.exception.AlreadyExistsException;
 import com.example.hotelbookingv2.exception.InvalidInputException;
 import com.example.hotelbookingv2.exception.ResourceNotFoundException;
@@ -24,14 +23,11 @@ public class RoomService {
 
     private final RoomRepository roomRepository;
     private final FacilityRepository facilityRepository;
-    private final RoomCache roomCache;
 
     @Autowired
-    public RoomService(RoomRepository roomRepository, FacilityRepository facilityRepository,
-                           RoomCache roomCache) {
+    public RoomService(RoomRepository roomRepository, FacilityRepository facilityRepository) {
         this.roomRepository = roomRepository;
         this.facilityRepository = facilityRepository;
-        this.roomCache = roomCache;
     }
 
     public List<Room> findRoomsByHotel(String hotelId) {
@@ -59,14 +55,10 @@ public class RoomService {
     }
 
     public Room getRoomById(String id) {
-        Room room = roomCache.get(id);
-        if (room == null) {
-            room = roomRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
-            roomCache.put(id, room);  // Здесь обновляется кеш
-        }
-        return room;
+        return roomRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found"));
     }
+
 
 
     @Transactional
@@ -85,11 +77,9 @@ public class RoomService {
             throw new InvalidInputException("Комната с номером " + room.getRoomNumber()
                     + " уже существует в этом отеле.");
         }
-
-        Room savedRoom = roomRepository.save(room);
-        roomCache.put(savedRoom.getId(), savedRoom);
-        return savedRoom;
+        return roomRepository.save(room);
     }
+
 
 
     @Transactional
@@ -101,7 +91,6 @@ public class RoomService {
             throw new ResourceNotFoundException("Комната с ID " + id + " не найдена.");
         }
         roomRepository.deleteById(id);
-        roomCache.remove(id);
     }
 
     @Transactional
@@ -134,7 +123,6 @@ public class RoomService {
             }
 
             Room updated = roomRepository.save(room);
-            roomCache.put(updated.getId(), updated);
             return updated;
         }).orElseThrow(() -> new ResourceNotFoundException("Комната с ID: " + id + " не найдена."));
     }
@@ -182,8 +170,6 @@ public class RoomService {
         }
 
         List<Room> savedRooms = roomRepository.saveAll(rooms);
-        savedRooms.forEach(room -> roomCache.put(room.getId(), room));
-
         return savedRooms;
     }
 }

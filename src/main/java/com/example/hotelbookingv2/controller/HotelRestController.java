@@ -42,7 +42,7 @@ public class HotelRestController {
             @Parameter(description = "Категория отеля (например, 5 звезд)")
             @RequestParam(required = false) String category) {
 
-        visitCounterService.increment(); // увеличиваем счётчик
+        visitCounterService.increment();
 
         List<Hotel> hotels = hotelService.getHotels(city, category);
         List<HotelDto> hotelDtos = hotels.stream()

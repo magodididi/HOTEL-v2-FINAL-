@@ -3,20 +3,18 @@ package com.example.hotelbookingv2.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "hotels")
@@ -29,7 +27,6 @@ import lombok.ToString;
 public class Hotel {
 
     @Id
-    @GeneratedValue(generator = "UUID")
     private String id;
 
     private String name;
@@ -41,7 +38,13 @@ public class Hotel {
     @JsonManagedReference
     private List<Room> rooms = new ArrayList<>();
 
-    // Конструктор для инициализации всех полей
+    @PrePersist
+    public void generateId() {
+        if (this.id == null || this.id.isBlank()) {
+            this.id = UUID.randomUUID().toString();
+        }
+    }
+
     public Hotel(String id, String name, String city, String category, String availableFromDate) {
         this.id = id;
         this.name = name;
@@ -50,7 +53,6 @@ public class Hotel {
         this.availableFromDate = availableFromDate;
     }
 
-    // Геттеры и сеттеры (можно использовать Lombok для их генерации)
     public String getId() {
         return id;
     }

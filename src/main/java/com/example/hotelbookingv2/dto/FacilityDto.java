@@ -1,5 +1,6 @@
 package com.example.hotelbookingv2.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,13 +21,11 @@ public class FacilityDto {
     @NotBlank(message = "Название не должно быть пустым")
     private String name;
 
-    public FacilityDto(String id, String name) {
+    @JsonCreator
+    public FacilityDto(@JsonProperty("id") String id, @JsonProperty("name") String name) {
         this.id = id;
         this.name = name;
     }
-
-
-
 
     public String getId() {
         return id;

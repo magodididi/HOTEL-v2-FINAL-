@@ -44,6 +44,8 @@ public class HotelService {
         return hotels;
     }
 
+
+
     private String generateCacheKey(String city, String category) {
         return city + ":" + category;
     }
@@ -63,10 +65,17 @@ public class HotelService {
         if (hotel.getName() == null || hotel.getName().isBlank()) {
             throw new InvalidInputException("Название отеля не должно быть пустым");
         }
+
         Hotel savedHotel = hotelRepository.save(hotel);
+
         hotelCache.put(savedHotel.getId(), List.of(savedHotel));
+
+        hotelCache.clear();
+
         return savedHotel;
     }
+
+
 
     public void deleteHotel(String id) {
         if (!hotelRepository.existsById(id)) {
@@ -86,18 +95,28 @@ public class HotelService {
         if (updatedHotel.getCategory() == null || updatedHotel.getCategory().isBlank()) {
             throw new InvalidInputException("Категория отеля не должна быть пустой");
         }
+
         return hotelRepository.findById(id).map(existingHotel -> {
             existingHotel.setName(updatedHotel.getName());
             existingHotel.setCity(updatedHotel.getCity());
             existingHotel.setCategory(updatedHotel.getCategory());
             existingHotel.setAvailableFromDate(updatedHotel.getAvailableFromDate());
+
             if (updatedHotel.getRooms() != null && !updatedHotel.getRooms().isEmpty()) {
                 existingHotel.getRooms().clear();
                 existingHotel.getRooms().addAll(updatedHotel.getRooms());
             }
+
             Hotel savedHotel = hotelRepository.save(existingHotel);
+
+            // Обновляем кэш по id
             hotelCache.put(id, List.of(savedHotel));
+
+            // Очищаем все записи из кэша по фильтрам (город/категория)
+            hotelCache.clear(); // <-- ЭТО ВАЖНО
+
             return savedHotel;
         }).orElseThrow(() -> new ResourceNotFoundException("Отель с ID " + id + " не найден"));
     }
+
 }

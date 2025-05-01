@@ -27,7 +27,6 @@ import lombok.Setter;
 public class Facility {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id = UUID.randomUUID().toString();
 
     @Column(nullable = false, unique = true)

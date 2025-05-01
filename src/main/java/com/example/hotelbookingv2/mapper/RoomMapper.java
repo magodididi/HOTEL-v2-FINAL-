@@ -2,12 +2,15 @@ package com.example.hotelbookingv2.mapper;
 
 import com.example.hotelbookingv2.dto.FacilityDto;
 import com.example.hotelbookingv2.dto.RoomDto;
+import com.example.hotelbookingv2.exception.InvalidInputException;
 import com.example.hotelbookingv2.model.Facility;
 import com.example.hotelbookingv2.model.Hotel;
 import com.example.hotelbookingv2.model.Room;
 import com.example.hotelbookingv2.service.HotelService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,12 +31,15 @@ public class RoomMapper {
         room.setPrice(dto.getPrice());
 
         Hotel hotel = hotelService.getHotelById(dto.getHotelId());
+        if (hotel == null) {
+            throw new InvalidInputException("Отель с указанным ID не существует.");
+        }
         room.setHotel(hotel);
 
-        if (dto.getFacilities() != null) {
+        if (dto.getFacilities() != null && !dto.getFacilities().isEmpty()) {
             List<Facility> facilities = dto.getFacilities().stream()
                     .map(facilityDto -> new Facility(facilityDto.getId(), facilityDto.getName()))
-                    .toList();
+                    .collect(Collectors.toList());
             room.setFacilities(new ArrayList<>(facilities));
         }
 
@@ -49,15 +55,16 @@ public class RoomMapper {
                 room.getHotel().getId(),
                 room.getFacilities().stream()
                         .map(f -> new FacilityDto(f.getId(), f.getName()))
-                        .toList()
+                        .collect(Collectors.toList())
         );
     }
 
     public List<RoomDto> toDtoList(List<Room> rooms) {
-        return rooms.stream().map(this::toDto).toList();
+        return rooms.stream().map(this::toDto).collect(Collectors.toList());
     }
 
     public List<Room> toEntityList(List<RoomDto> dtos) {
-        return dtos.stream().map(this::toEntity).toList();
+        return dtos.stream().map(this::toEntity).collect(Collectors.toList());
     }
 }
+
