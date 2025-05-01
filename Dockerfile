@@ -13,4 +13,4 @@ RUN chmod +x /wait-for-it.sh
 
 EXPOSE 8080
 
-ENTRYPOINT ["/wait-for-it.sh", "db:5432",  "--timeout=30", "--", "java", "--add-opens", "java.base/java.io=ALL-UNNAMED", "-jar", "app.jar"]
+ENTRYPOINT ["/wait-for-it.sh", "db:5432", "--", "java", "--add-opens", "java.base/java.io=ALL-UNNAMED", "-jar", "app.jar"]
