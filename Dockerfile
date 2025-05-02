@@ -13,4 +13,4 @@ RUN chmod +x /wait-for-it.sh
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "--add-opens", "java.base/java.io=ALL-UNNAMED", "-jar", "app.jar"]
+ENTRYPOINT ["java", "--add-opens", "java.base/java.io=ALL-UNNAMED", "-Xmx256m", "-jar", "app.jar"]
