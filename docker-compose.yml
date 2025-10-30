@@ -10,8 +10,8 @@ services:
       - db
     environment:
       POSTGRES_DB: bd_hostels
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     networks:
       - app-network
 
@@ -28,8 +28,8 @@ services:
     image: postgres:15
     environment:
       POSTGRES_DB: bd_hostels
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     networks:
