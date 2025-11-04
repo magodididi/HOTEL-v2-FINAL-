@@ -119,4 +119,6 @@ public class HotelService {
         }).orElseThrow(() -> new ResourceNotFoundException("Отель с ID " + id + " не найден"));
     }
 
+
+
 }
